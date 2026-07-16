@@ -1,0 +1,108 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+  :root {
+    --background: 35 47% 93%;
+    --foreground: 42 6% 16%;
+    --card: 40 60% 98%;
+    --card-foreground: 42 6% 16%;
+    --popover: 40 60% 98%;
+    --popover-foreground: 42 6% 16%;
+    --primary: 12 67% 63%;
+    --primary-foreground: 40 60% 98%;
+    --secondary: 76 22% 46%;
+    --secondary-foreground: 40 60% 98%;
+    --muted: 35 30% 90%;
+    --muted-foreground: 34 9% 41%;
+    --accent: 212 35% 17%;
+    --accent-foreground: 40 60% 98%;
+    --highlight: 39 78% 60%;
+    --cream-2: 35 42% 90%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 35 25% 88%;
+    --input: 35 25% 88%;
+    --ring: 12 67% 63%;
+    --chart-1: 12 67% 63%;
+    --chart-2: 76 22% 46%;
+    --chart-3: 212 35% 17%;
+    --chart-4: 39 78% 60%;
+    --chart-5: 27 87% 67%;
+    --radius: 1.125rem;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    --sidebar-background: 40 60% 98%;
+    --sidebar-foreground: 42 6% 16%;
+    --sidebar-primary: 12 67% 63%;
+    --sidebar-primary-foreground: 40 60% 98%;
+    --sidebar-accent: 35 30% 90%;
+    --sidebar-accent-foreground: 42 6% 16%;
+    --sidebar-border: 35 25% 88%;
+    --sidebar-ring: 12 67% 63%;
+  }
+
+  .dark {
+    --background: 212 30% 10%;
+    --foreground: 35 30% 92%;
+    --card: 212 25% 13%;
+    --card-foreground: 35 30% 92%;
+    --popover: 212 25% 13%;
+    --popover-foreground: 35 30% 92%;
+    --primary: 12 67% 63%;
+    --primary-foreground: 212 30% 10%;
+    --secondary: 76 22% 56%;
+    --secondary-foreground: 212 30% 10%;
+    --muted: 212 20% 18%;
+    --muted-foreground: 35 15% 65%;
+    --accent: 39 78% 60%;
+    --accent-foreground: 212 30% 10%;
+    --highlight: 39 78% 60%;
+    --cream-2: 212 25% 15%;
+    --destructive: 0 62% 40%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 212 20% 20%;
+    --input: 212 20% 20%;
+    --ring: 12 67% 63%;
+    --chart-1: 12 67% 63%;
+    --chart-2: 76 22% 56%;
+    --chart-3: 35 30% 92%;
+    --chart-4: 39 78% 60%;
+    --chart-5: 27 87% 67%;
+    --sidebar-background: 212 25% 13%;
+    --sidebar-foreground: 35 30% 92%;
+    --sidebar-primary: 12 67% 63%;
+    --sidebar-primary-foreground: 212 30% 10%;
+    --sidebar-accent: 212 20% 18%;
+    --sidebar-accent-foreground: 35 30% 92%;
+    --sidebar-border: 212 20% 20%;
+    --sidebar-ring: 12 67% 63%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body;
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  button,
+  a,
+  nav,
+  [role="button"] {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}

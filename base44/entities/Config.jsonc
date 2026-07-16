@@ -1,0 +1,12 @@
+{
+  "name": "Config",
+  "type": "object",
+  "properties": {
+    "paleta_ativa": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "paleta_ativa"
+  ]
+}

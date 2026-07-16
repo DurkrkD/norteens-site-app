@@ -1,0 +1,20 @@
+{
+  "name": "Curtida",
+  "type": "object",
+  "properties": {
+    "usuario": {
+      "type": "string",
+      "relationType": "one",
+      "relatedEntity": "User"
+    },
+    "post": {
+      "type": "string",
+      "relationType": "one",
+      "relatedEntity": "Post"
+    }
+  },
+  "required": [
+    "usuario",
+    "post"
+  ]
+}

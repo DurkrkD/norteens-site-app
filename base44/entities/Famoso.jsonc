@@ -1,0 +1,20 @@
+{
+  "name": "Famoso",
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "string"
+    },
+    "profissao": {
+      "type": "string",
+      "relationType": "one",
+      "relatedEntity": "Profissao"
+    }
+  },
+  "required": [
+    "nome"
+  ]
+}

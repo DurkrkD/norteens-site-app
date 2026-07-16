@@ -1,0 +1,50 @@
+{
+  "name": "Profissao",
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string"
+    },
+    "icone": {
+      "type": "string"
+    },
+    "descricao": {
+      "type": "string"
+    },
+    "formacao": {
+      "type": "string"
+    },
+    "comportamentais": {
+      "type": "string"
+    },
+    "salario": {
+      "type": "string"
+    },
+    "tecnicas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "regioes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ferramentas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "responsavel": {
+      "type": "string",
+      "relationType": "one",
+      "relatedEntity": "User"
+    }
+  },
+  "required": [
+    "nome"
+  ]
+}
