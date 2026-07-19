@@ -234,5 +234,105 @@ export const norteens = {
     const dados = await resposta.json();
     if (!resposta.ok) throw new Error(dados.erro || 'Erro ao excluir conta');
     return dados;
+  },
+
+  // [ADMIN] cria uma profissão
+  async criarProfissao(dados) {
+    const token = localStorage.getItem('token');
+    const resposta = await fetch(`${API_URL}/profissoes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify(dados)
+    });
+    const r = await resposta.json();
+    if (!resposta.ok) throw new Error(r.erro || 'Erro ao criar profissão');
+    return r;
+  },
+
+  // [ADMIN] edita uma profissão
+  async editarProfissao(id, dados) {
+    const token = localStorage.getItem('token');
+    const resposta = await fetch(`${API_URL}/profissoes/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify(dados)
+    });
+    const r = await resposta.json();
+    if (!resposta.ok) throw new Error(r.erro || 'Erro ao editar profissão');
+    return r;
+  },
+
+  // [ADMIN] apaga uma profissão
+  async apagarProfissao(id) {
+    const token = localStorage.getItem('token');
+    const resposta = await fetch(`${API_URL}/profissoes/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const r = await resposta.json();
+    if (!resposta.ok) throw new Error(r.erro || 'Erro ao apagar profissão');
+    return r;
+  },
+
+  // [ADMIN] cria um famoso
+  async criarFamoso(dados) {
+    const token = localStorage.getItem('token');
+    const resposta = await fetch(`${API_URL}/famosos`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify(dados)
+    });
+    const r = await resposta.json();
+    if (!resposta.ok) throw new Error(r.erro || 'Erro ao criar famoso');
+    return r;
+  },
+
+  // [ADMIN] edita um famoso
+  async editarFamoso(id, dados) {
+    const token = localStorage.getItem('token');
+    const resposta = await fetch(`${API_URL}/famosos/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify(dados)
+    });
+    const r = await resposta.json();
+    if (!resposta.ok) throw new Error(r.erro || 'Erro ao editar famoso');
+    return r;
+  },
+
+// [ADMIN] apaga um famoso
+  async apagarFamoso(id) {
+    const token = localStorage.getItem('token');
+    const resposta = await fetch(`${API_URL}/famosos/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const r = await resposta.json();
+    if (!resposta.ok) throw new Error(r.erro || 'Erro ao apagar famoso');
+    return r;
+  },
+
+  // [ADMIN] lista todos os usuários
+  async listarUsuarios() {
+    const token = localStorage.getItem('token');
+    const resposta = await fetch(`${API_URL}/usuarios-admin`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const r = await resposta.json();
+    if (!resposta.ok) throw new Error(r.erro || 'Erro ao listar usuários');
+    return r;
+  },
+
+  // [ADMIN] muda o papel de um usuário
+  async mudarPapel(userId, papel) {
+    const token = localStorage.getItem('token');
+    const resposta = await fetch(`${API_URL}/usuarios/${userId}/papel`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ papel })
+    });
+    const r = await resposta.json();
+    if (!resposta.ok) throw new Error(r.erro || 'Erro ao mudar papel');
+    return r;
   }
 };

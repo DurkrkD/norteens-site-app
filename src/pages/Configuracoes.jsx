@@ -22,9 +22,9 @@ export default function Configuracoes() {
   }, [user, navigate]);
 
   if (!user) return null;
-
-  const isARP = user.papel === "arp" || user.papel === "dono";
-  const isDono = user.papel === "dono";
+  
+  const isARP = user.papel === "admin";
+  const isDono = user.papel === "admin";
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">

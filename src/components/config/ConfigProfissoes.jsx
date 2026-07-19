@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { norteens } from "@/api/norteensClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,21 +16,14 @@ export default function ConfigProfissoes({ user }) {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(emptyForm());
 
-  const isDono = user.papel === "dono";
+  const isDono = user.papel === "admin";
 
   function emptyForm() {
     return { nome: "", icone: "", descricao: "", formacao: "", comportamentais: "", salario: "", tecnicas: "", regioes: "", ferramentas: "" };
   }
 
-  const load = async () => {
-    let data;
-    if (isDono) {
-      data = await base44.entities.Profissao.list();
-    } else {
-      data = user.profissao_atribuida
-        ? [await base44.entities.Profissao.get(user.profissao_atribuida)]
-        : [];
-    }
+const load = async () => {
+    const data = await norteens.listarProfissoes();
     setProfissoes(data);
     setLoading(false);
   };
@@ -72,10 +65,10 @@ export default function ConfigProfissoes({ user }) {
       ferramentas: form.ferramentas.split(",").map((s) => s.trim()).filter(Boolean),
     };
     if (editing) {
-      await base44.entities.Profissao.update(editing.id, payload);
+      await norteens.editarProfissao(editing.id, payload);
       toast({ title: "Profissão atualizada!" });
     } else {
-      await base44.entities.Profissao.create(payload);
+      await norteens.criarProfissao(payload);
       toast({ title: "Profissão criada!" });
     }
     setDialogOpen(false);
@@ -83,7 +76,13 @@ export default function ConfigProfissoes({ user }) {
   };
 
   const handleDelete = async (id) => {
-    await base44.entities.Profissao.delete(id);
+    const prof = profissoes.find((p) => p.id === id);
+    const ok = window.confirm(
+      `Tem certeza que deseja apagar "${prof?.nome || 'esta profissão'}"?\n\nOs famosos ligados a ela também serão removidos. Esta ação não pode ser desfeita.`
+    );
+    if (!ok) return;
+
+    await norteens.apagarProfissao(id);
     toast({ title: "Profissão removida." });
     load();
   };

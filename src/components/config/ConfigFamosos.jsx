@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { norteens } from "@/api/norteensClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,12 +16,12 @@ export default function ConfigFamosos() {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState(null);
-  const [form, setForm] = useState({ nome: "", bio: "", profissao: "" });
+  const [form, setForm] = useState({ nome: "", bio: "", profissao_id: "" });
 
   const load = async () => {
     const [f, p] = await Promise.all([
-      base44.entities.Famoso.list(),
-      base44.entities.Profissao.list(),
+      norteens.listarFamosos(),
+      norteens.listarProfissoes(),
     ]);
     setFamosos(f);
     setProfissoes(p);
@@ -32,22 +32,22 @@ export default function ConfigFamosos() {
 
   const openNew = () => {
     setEditing(null);
-    setForm({ nome: "", bio: "", profissao: "" });
+    setForm({ nome: "", bio: "", profissao_id: "" });
     setDialogOpen(true);
   };
 
   const openEdit = (f) => {
     setEditing(f);
-    setForm({ nome: f.nome || "", bio: f.bio || "", profissao: f.profissao || "" });
+    setForm({ nome: f.nome || "", bio: f.bio || "", profissao_id: f.profissao_id || "" });
     setDialogOpen(true);
   };
 
   const handleSave = async () => {
     if (editing) {
-      await base44.entities.Famoso.update(editing.id, form);
+      await norteens.editarFamoso(editing.id, form);
       toast({ title: "Famoso atualizado!" });
     } else {
-      await base44.entities.Famoso.create(form);
+      await norteens.criarFamoso(form);
       toast({ title: "Famoso criado!" });
     }
     setDialogOpen(false);
@@ -55,7 +55,10 @@ export default function ConfigFamosos() {
   };
 
   const handleDelete = async (id) => {
-    await base44.entities.Famoso.delete(id);
+    const f = famosos.find((x) => x.id === id);
+    const ok = window.confirm(`Tem certeza que deseja apagar "${f?.nome || 'este famoso'}"?`);
+    if (!ok) return;
+    await norteens.apagarFamoso(id);
     toast({ title: "Famoso removido." });
     load();
   };
@@ -77,7 +80,7 @@ export default function ConfigFamosos() {
           <div key={f.id} className="flex items-center justify-between p-4 bg-card rounded-xl border border-border">
             <div>
               <p className="font-medium text-foreground">{f.nome}</p>
-              {profMap[f.profissao] && <p className="text-xs text-muted-foreground">{profMap[f.profissao].icone} {profMap[f.profissao].nome}</p>}
+              {profMap[f.profissao_id] && <p className="text-xs text-muted-foreground">{profMap[f.profissao_id].icone} {profMap[f.profissao_id].nome}</p>}  
             </div>
             <div className="flex items-center gap-2">
               <button onClick={() => openEdit(f)} className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground">
@@ -90,7 +93,7 @@ export default function ConfigFamosos() {
           </div>
         ))}
       </div>
-      
+
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader><DialogTitle className="font-heading">{editing ? "Editar Famoso" : "Novo Famoso"}</DialogTitle></DialogHeader>
@@ -100,8 +103,8 @@ export default function ConfigFamosos() {
             <div>
               <Label>Profissão</Label>
               <MobileDrawerSelect
-                value={form.profissao}
-                onValueChange={(v) => setForm({ ...form, profissao: v })}
+                value={form.profissao_id}
+                onValueChange={(v) => setForm({ ...form, profissao_id: v })}
                 placeholder="Selecione"
                 options={profissoes.map((p) => ({ value: p.id, label: `${p.icone} ${p.nome}` }))}
               />
