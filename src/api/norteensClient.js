@@ -19,12 +19,7 @@ export const norteens = {
     localStorage.setItem('token', dados.token);
     return dados.usuario;
   },
-  // trocar tudo os "base44client" pra "norteensclient"
-  // e por import em cima no topo do código dependendo da pasta
-  // é gi, se eu soubesse que a indecisão era culpa minha eu tinha te dito com clareza o que eu queria.
-  // mas o complicado é que eu não sabia e nem sei até hoje se vc quer ou não ou o que quer...
-  // falta mexer nas config das cores, pra quando dar f5 ou fechar o site ele manter as cores
-  // apesar de ser a mesma bosta
+  
   // cria uma conta nova e já loga em seguida
   async register(nome, email, senha) {
     const resposta = await fetch(`${API_URL}/usuarios`, {
