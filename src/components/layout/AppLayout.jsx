@@ -3,8 +3,7 @@ import { Outlet } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import MobileBottomTabs from "@/components/layout/MobileBottomTabs";
 import NoChat from "@/components/assistente/NoChat";
-import { base44 } from "@/api/base44Client";
-import { loadSavedPalette } from "@/components/config/ConfigPaleta";
+import { norteens } from "@/api/norteensClient";
 import { applyUserColor } from "@/utils/userColor";
 
 export default function AppLayout() {
@@ -13,12 +12,10 @@ export default function AppLayout() {
 
   useEffect(() => {
     const load = async () => {
-      await loadSavedPalette();
-      const authed = await base44.auth.isAuthenticated();
-      if (authed) {
-        const me = await base44.auth.me();
+      const me = await norteens.me();
+      if (me) {
         setUser(me);
-        if (me?.cor_personalizada) {
+        if (me.cor_personalizada) {
           applyUserColor(me.cor_personalizada);
         }
       }

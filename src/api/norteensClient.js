@@ -1,0 +1,238 @@
+// Cliente que fala com o NOSSO servidor (localhost:3000)
+const API_URL = 'http://localhost:3000';
+
+export const norteens = {
+  // faz login e guarda o token (crachá) no navegador
+  async login(email, senha) {
+    const resposta = await fetch(`${API_URL}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, senha })
+    });
+
+    const dados = await resposta.json();
+
+    if (!resposta.ok) {
+      throw new Error(dados.erro || 'Erro ao fazer login');
+    }
+
+    localStorage.setItem('token', dados.token);
+    return dados.usuario;
+  },
+  // trocar tudo os "base44client" pra "norteensclient"
+  // e por import em cima no topo do código dependendo da pasta
+  // é gi, se eu soubesse que a indecisão era culpa minha eu tinha te dito com clareza o que eu queria.
+  // mas o complicado é que eu não sabia e nem sei até hoje se vc quer ou não ou o que quer...
+  // falta mexer nas config das cores, pra quando dar f5 ou fechar o site ele manter as cores
+  // apesar de ser a mesma bosta
+  // cria uma conta nova e já loga em seguida
+  async register(nome, email, senha) {
+    const resposta = await fetch(`${API_URL}/usuarios`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome, email, senha })
+    });
+    const dados = await resposta.json();
+    if (!resposta.ok) {
+      throw new Error(dados.erro || 'Erro ao criar conta');
+    }
+    return await this.login(email, senha);
+  },
+
+  // pergunta ao servidor quem é o usuário logado
+  async me() {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    const resposta = await fetch(`${API_URL}/me`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!resposta.ok) {
+      localStorage.removeItem('token');
+      return null;
+    }
+    return await resposta.json();
+  },
+
+  // atualiza dados do próprio usuário
+  async updateMe(campos) {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Não autenticado');
+    const resposta = await fetch(`${API_URL}/me`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(campos)
+    });
+    const dados = await resposta.json();
+    if (!resposta.ok) {
+      throw new Error(dados.erro || 'Erro ao atualizar');
+    }
+    return dados;
+  },
+
+  // verifica se tem alguém logado
+  async isAuthenticated() {
+    const usuario = await this.me();
+    return usuario !== null;
+  },
+
+  // desloga: joga o crachá fora
+  logout() {
+    localStorage.removeItem('token');
+  },
+
+  // lista todas as profissões
+  async listarProfissoes() {
+    const resposta = await fetch(`${API_URL}/profissoes`);
+    if (!resposta.ok) throw new Error('Erro ao buscar profissões');
+    return await resposta.json();
+  },
+
+  // busca uma profissão pelo id
+  async getProfissao(id) {
+    const resposta = await fetch(`${API_URL}/profissoes/${id}`);
+    if (!resposta.ok) throw new Error('Profissão não encontrada');
+    return await resposta.json();
+  },
+
+  // lista os famosos de uma profissão
+  async getFamosos(id) {
+    const resposta = await fetch(`${API_URL}/profissoes/${id}/famosos`);
+    if (!resposta.ok) throw new Error('Erro ao buscar famosos');
+    return await resposta.json();
+  },
+
+// lista TODOS os famosos
+  async listarFamosos() {
+    const resposta = await fetch(`${API_URL}/famosos`);
+    if (!resposta.ok) throw new Error('Erro ao buscar famosos');
+    return await resposta.json();
+  },
+
+  // lista o feed de posts
+  async listarPosts() {
+    const resposta = await fetch(`${API_URL}/posts`);
+    if (!resposta.ok) throw new Error('Erro ao buscar posts');
+    return await resposta.json();
+  },
+
+ // cria um post novo (precisa estar logado)
+  async criarPost(texto, imagem) {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Não autenticado');
+    const resposta = await fetch(`${API_URL}/posts`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ texto, imagem })
+    });
+    const dados = await resposta.json();
+    if (!resposta.ok) throw new Error(dados.erro || 'Erro ao criar post');
+    return dados;
+  },
+
+  // curtir/descurtir um post (alterna)
+  async curtir(postId) {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Não autenticado');
+    const resposta = await fetch(`${API_URL}/posts/${postId}/curtir`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const dados = await resposta.json();
+    if (!resposta.ok) throw new Error(dados.erro || 'Erro ao curtir');
+    return dados;
+  },
+
+ // pega a contagem de curtidas de um post (e se você curtiu)
+  async getCurtidas(postId) {
+    const token = localStorage.getItem('token');
+    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+    const resposta = await fetch(`${API_URL}/posts/${postId}/curtidas`, { headers });
+    if (!resposta.ok) throw new Error('Erro ao buscar curtidas');
+    return await resposta.json();
+  },
+
+  // lista os comentários de um post
+  async getComentarios(postId) {
+    const resposta = await fetch(`${API_URL}/posts/${postId}/comentarios`);
+    if (!resposta.ok) throw new Error('Erro ao buscar comentários');
+    return await resposta.json();
+  },
+
+  // comenta em um post (precisa estar logado)
+  async comentar(postId, texto) {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Não autenticado');
+    const resposta = await fetch(`${API_URL}/posts/${postId}/comentarios`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ texto })
+    });
+    const dados = await resposta.json();
+    if (!resposta.ok) throw new Error(dados.erro || 'Erro ao comentar');
+    return dados;
+  },
+
+  // apaga um post (só o dono)
+  async apagarPost(postId) {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Não autenticado');
+    const resposta = await fetch(`${API_URL}/posts/${postId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const dados = await resposta.json();
+    if (!resposta.ok) throw new Error(dados.erro || 'Erro ao apagar');
+    return dados;
+  },
+// apaga um comentário (só o dono)
+  async apagarComentario(comentarioId) {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Não autenticado');
+    const resposta = await fetch(`${API_URL}/comentarios/${comentarioId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const dados = await resposta.json();
+    if (!resposta.ok) throw new Error(dados.erro || 'Erro ao apagar comentário');
+    return dados;
+  },
+
+  // troca a própria senha (precisa da senha atual)
+  async trocarSenha(senhaAtual, senhaNova) {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Não autenticado');
+    const resposta = await fetch(`${API_URL}/me/senha`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ senhaAtual, senhaNova })
+    });
+    const dados = await resposta.json();
+    if (!resposta.ok) throw new Error(dados.erro || 'Erro ao trocar senha');
+    return dados;
+  },
+
+  // apaga a própria conta
+  async apagarConta() {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Não autenticado');
+    const resposta = await fetch(`${API_URL}/me`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const dados = await resposta.json();
+    if (!resposta.ok) throw new Error(dados.erro || 'Erro ao excluir conta');
+    return dados;
+  }
+};

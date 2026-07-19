@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { norteens } from "@/api/norteensClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,15 +24,16 @@ export default function Register() {
     e.preventDefault();
     setError("");
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError("As senhas não coincidem");
       return;
     }
     setLoading(true);
     try {
-      await base44.auth.register({ email, password });
-      setShowOtp(true);
+      const nome = email.split("@")[0]; // nome temporário a partir do e-mail
+      await norteens.register(nome, email, password);
+      window.location.href = "/";
     } catch (err) {
-      setError(err.message || "Registration failed");
+      setError(err.message || "Erro ao criar conta");
     } finally {
       setLoading(false);
     }

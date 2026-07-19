@@ -1,4 +1,5 @@
 import { base44 } from "@/api/base44Client";
+import { norteens } from "@/api/norteensClient";
 
 export const MARCOS = [
   { key: "marco_teste", label: "Fez o teste" },
@@ -18,6 +19,6 @@ export function todosConcluidos(user) {
 
 export async function marcarMarco(user, setUser, milestoneField) {
   if (!user || user[milestoneField]) return;
-  await base44.auth.updateMe({ [milestoneField]: true });
+  await norteens.updateMe({ [milestoneField]: true });
   setUser({ ...user, [milestoneField]: true });
 }

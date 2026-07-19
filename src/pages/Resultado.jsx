@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useOutletContext, useNavigate, Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { norteens } from "@/api/norteensClient";
 import ReactMarkdown from "react-markdown";
 import { Compass, ArrowRight } from "lucide-react";
 import { marcarMarco } from "@/utils/progresso";

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { norteens } from "@/api/norteensClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,8 +29,7 @@ export default function ConfigPerfil() {
     if (!file) return;
     setUploading(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setForm((prev) => ({ ...prev, foto_perfil: file_url }));
+      toast({ title: "Envio de foto em breve!", description: "Essa função ainda será ativada." });
     } catch {
       toast({ title: "Erro ao enviar foto.", variant: "destructive" });
     }
@@ -39,15 +39,14 @@ export default function ConfigPerfil() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await base44.auth.updateMe({
+      const atualizado = await norteens.updateMe({
         nome: form.nome.trim(),
         apelido: form.apelido.trim(),
         bio: form.bio.trim(),
         serie_idade: form.serie_idade.trim(),
         cidade: form.cidade.trim(),
-        foto_perfil: form.foto_perfil,
       });
-      setUser({ ...user, ...form });
+      setUser(atualizado);
       toast({ title: "Perfil salvo com sucesso!" });
     } catch {
       toast({ title: "Erro ao salvar perfil.", variant: "destructive" });

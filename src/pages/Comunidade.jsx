@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useOutletContext } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { norteens } from "@/api/norteensClient";
 import PostCard from "@/components/community/PostCard";
 import CreatePost from "@/components/community/CreatePost";
 import PullToRefreshIndicator from "@/components/community/PullToRefreshIndicator";
@@ -13,7 +14,7 @@ export default function Comunidade() {
   const [loading, setLoading] = useState(true);
 
   const loadPosts = useCallback(async () => {
-    const data = await base44.entities.Post.list("-criado_em", 50);
+    const data = await norteens.listarPosts();
     setPosts(data);
     setLoading(false);
   }, []);

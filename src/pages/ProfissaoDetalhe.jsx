@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useOutletContext, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { norteens } from "@/api/norteensClient";
 import { ArrowLeft, DollarSign, MapPin, Wrench, GraduationCap, Brain, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -17,8 +18,8 @@ export default function ProfissaoDetalhe() {
 
   useEffect(() => {
     Promise.all([
-      base44.entities.Profissao.get(id),
-      base44.entities.Famoso.filter({ profissao: id }),
+      norteens.getProfissao(id),
+      norteens.getFamosos(id),
     ]).then(([p, f]) => {
       setProfissao(p);
       setFamosos(f);
@@ -29,7 +30,7 @@ export default function ProfissaoDetalhe() {
   const handleEscolher = async () => {
     if (!user || user.profissao_escolhida) return;
     setChoosing(true);
-    await base44.auth.updateMe({ profissao_escolhida: id });
+    await norteens.updateMe({ profissao_escolhida: id });
     setUser({ ...user, profissao_escolhida: id });
     toast({ title: "Profissão escolhida!", description: `Você escolheu ${profissao.nome}.` });
     setChoosing(false);

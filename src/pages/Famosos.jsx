@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { norteens } from "@/api/norteensClient";
 import { Link } from "react-router-dom";
 
 export default function Famosos() {
@@ -9,8 +10,8 @@ export default function Famosos() {
 
   useEffect(() => {
     Promise.all([
-      base44.entities.Famoso.list(),
-      base44.entities.Profissao.list(),
+      norteens.listarFamosos(),
+      norteens.listarProfissoes(),
     ]).then(([f, p]) => {
       setFamosos(f);
       const map = {};
@@ -38,7 +39,7 @@ export default function Famosos() {
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {famosos.map((f) => {
-            const prof = profissoes[f.profissao];
+            const prof = profissoes[f.profissao_id];
             return (
               <div key={f.id} className="p-6 bg-card rounded-2xl border border-border">
                 <h3 className="font-heading text-lg font-semibold text-foreground">{f.nome}</h3>

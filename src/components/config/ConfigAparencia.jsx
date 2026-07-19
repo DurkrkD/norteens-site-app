@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { norteens } from "@/api/norteensClient";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { applyUserColor, clearUserColor } from "@/utils/userColor";
@@ -35,7 +36,7 @@ export default function ConfigAparencia() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await base44.auth.updateMe({ cor_personalizada: color });
+      await norteens.updateMe({ cor_personalizada: color });
       setUser({ ...user, cor_personalizada: color });
       toast({ title: "Aparência salva!" });
     } catch {
@@ -49,7 +50,7 @@ export default function ConfigAparencia() {
     clearUserColor();
     setColor("");
     try {
-      await base44.auth.updateMe({ cor_personalizada: "" });
+      await norteens.updateMe({ cor_personalizada: "" });
       setUser({ ...user, cor_personalizada: "" });
       toast({ title: "Cor padrão restaurada." });
     } catch {

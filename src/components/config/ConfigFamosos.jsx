@@ -90,7 +90,7 @@ export default function ConfigFamosos() {
           </div>
         ))}
       </div>
-
+      
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader><DialogTitle className="font-heading">{editing ? "Editar Famoso" : "Novo Famoso"}</DialogTitle></DialogHeader>

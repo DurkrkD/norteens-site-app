@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, LogOut, Search, User, Settings } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { norteens } from "@/api/norteensClient";
 import { todosConcluidos, calcularNivel } from "@/utils/progresso";
 import UserAvatar from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
@@ -149,7 +150,7 @@ export default function Navbar({ user }) {
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
-                      onClick={() => base44.auth.logout("/")}
+                      onClick={() => { norteens.logout(); window.location.href = "/"; }}
                       className="flex items-center gap-2 text-destructive cursor-pointer"
                     >
                       <LogOut className="w-4 h-4" /> Sair
@@ -205,7 +206,7 @@ export default function Navbar({ user }) {
           <div className="px-3 py-3 border-t border-border space-y-1">
             {user ? (
               <button
-                onClick={() => { base44.auth.logout("/"); setOpen(false); }}
+                onClick={() => { norteens.logout(); setOpen(false); window.location.href = "/"; }}
                 className="w-full text-left px-4 py-3 rounded-[12px] text-sm font-medium text-muted-foreground hover:bg-muted transition-colors flex items-center gap-2"
               >
                 <LogOut className="w-4 h-4" /> Sair

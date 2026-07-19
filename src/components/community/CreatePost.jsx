@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
+import { norteens } from "@/api/norteensClient";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ImagePlus, Send } from "lucide-react";
@@ -30,16 +31,11 @@ export default function CreatePost({ user, onCreated }) {
     setImagem("");
     setShowImageInput(false);
 
-    try {
-      await base44.entities.Post.create({
-        autor: user.id,
-        texto: optimisticPost.texto,
-        imagem: optimisticPost.imagem,
-        criado_em: optimisticPost.criado_em,
-      });
+   try {
+      await norteens.criarPost(optimisticPost.texto, optimisticPost.imagem);
     } finally {
       setSending(false);
-      onCreated(); // sync with server, replacing the temp post
+      onCreated(); // sincroniza com o servidor, substituindo o post temporário
     }
   };
 
@@ -49,7 +45,6 @@ export default function CreatePost({ user, onCreated }) {
     const { file_url } = await base44.integrations.Core.UploadFile({ file });
     setImagem(file_url);
   };
-
   return (
     <div className="bg-card rounded-2xl border border-border p-5">
       <Textarea
@@ -77,5 +72,5 @@ export default function CreatePost({ user, onCreated }) {
         </Button>
       </div>
     </div>
-  );
-}
+  )
+};

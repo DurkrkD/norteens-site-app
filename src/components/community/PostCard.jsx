@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { norteens } from "@/api/norteensClient";
 import { Heart, MessageCircle, Trash2 } from "lucide-react";
 import UserAvatar from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
@@ -7,88 +7,60 @@ import { Input } from "@/components/ui/input";
 import moment from "moment";
 
 export default function PostCard({ post, user, onUpdate }) {
-  const [autor, setAutor] = useState(null);
-  const [curtidas, setCurtidas] = useState([]);
+  const [totalCurtidas, setTotalCurtidas] = useState(0);
+  const [liked, setLiked] = useState(false);
   const [comentarios, setComentarios] = useState([]);
   const [showComments, setShowComments] = useState(false);
   const [novoComentario, setNovoComentario] = useState("");
   const [sendingComment, setSendingComment] = useState(false);
 
-  useEffect(() => {
-    base44.entities.User.get(post.autor).then(setAutor).catch(() => {});
-    base44.entities.Curtida.filter({ post: post.id }).then(setCurtidas);
-    base44.entities.Comentario.filter({ post: post.id }, "criado_em").then(setComentarios);
-  }, [post.id, post.autor]);
+  // autor já vem junto do post (via JOIN no servidor)
+  const autor = {
+    nome: post.autor_nome,
+    apelido: post.autor_apelido,
+    foto_url: post.autor_foto,
+  };
 
-  const liked = user && curtidas.some((c) => c.usuario === user.id);
+  useEffect(() => {
+    norteens.getCurtidas(post.id).then((c) => {
+      setTotalCurtidas(c.total);
+      setLiked(c.curtido);
+    }).catch(() => {});
+    norteens.getComentarios(post.id).then(setComentarios).catch(() => {});
+  }, [post.id]);
 
   const handleLike = async () => {
     if (!user) return;
-    const wasLiked = liked;
-    const prevCurtidas = curtidas;
-
-    // Optimistic update — toggle heart immediately
-    if (wasLiked) {
-      setCurtidas(curtidas.filter((c) => c.usuario !== user.id));
-    } else {
-      setCurtidas([...curtidas, { id: "optimistic", usuario: user.id, post: post.id }]);
-    }
-
     try {
-      if (wasLiked) {
-        const mine = prevCurtidas.find((c) => c.usuario === user.id);
-        if (mine) await base44.entities.Curtida.delete(mine.id);
-      } else {
-        await base44.entities.Curtida.create({ usuario: user.id, post: post.id });
-      }
-      // Sync with server after the call completes
-      const updated = await base44.entities.Curtida.filter({ post: post.id });
-      setCurtidas(updated);
-    } catch {
-      // Revert on failure
-      setCurtidas(prevCurtidas);
-    }
+      const c = await norteens.curtir(post.id);
+      setTotalCurtidas(c.total);
+      setLiked(c.curtido);
+    } catch { /* ignora */ }
   };
 
   const handleComment = async () => {
     if (!user || !novoComentario.trim()) return;
-
-    // Optimistic: append comment immediately
-    const tempComment = {
-      id: `optimistic-${Date.now()}`,
-      autor: user.id,
-      post: post.id,
-      texto: novoComentario.trim(),
-      criado_em: new Date().toISOString(),
-      _optimistic: true,
-    };
-    setComentarios((prev) => [...prev, tempComment]);
-    const commentText = novoComentario.trim();
+    setSendingComment(true);
+    const texto = novoComentario.trim();
     setNovoComentario("");
-
     try {
-      await base44.entities.Comentario.create({
-        autor: user.id,
-        post: post.id,
-        texto: commentText,
-        criado_em: tempComment.criado_em,
-      });
-      const updated = await base44.entities.Comentario.filter({ post: post.id }, "criado_em");
+      await norteens.comentar(post.id, texto);
+      const updated = await norteens.getComentarios(post.id);
       setComentarios(updated);
-    } catch {
-      // Revert on failure
-      setComentarios((prev) => prev.filter((c) => c.id !== tempComment.id));
-    } finally {
+    } catch { /* ignora */ } finally {
       setSendingComment(false);
     }
   };
 
-  const handleDelete = async () => {
-    await base44.entities.Post.delete(post.id);
-    onUpdate();
+  const handleDeleteComment = async (comentarioId) => {
+    try {
+      await norteens.apagarComentario(comentarioId);
+      const updated = await norteens.getComentarios(post.id);
+      setComentarios(updated);
+    } catch { /* ignora */ }
   };
 
-  const isOwner = user && post.autor === user.id;
+  const isOwner = user && post.autor_id === user.id;
 
   return (
     <div className="bg-card rounded-2xl border border-border p-5">
@@ -97,8 +69,8 @@ export default function PostCard({ post, user, onUpdate }) {
         <div className="flex items-center gap-2.5">
           <UserAvatar user={autor} size="sm" />
           <div>
-            <p className="font-semibold text-foreground text-sm">{autor?.nome || autor?.apelido || autor?.full_name || autor?.email || "Usuário"}</p>
-            <p className="text-xs text-muted-foreground">{moment(post.criado_em || post.created_date).fromNow()}</p>
+            <p className="font-semibold text-foreground text-sm">{autor.nome || autor.apelido || "Usuário"}</p>
+            <p className="text-xs text-muted-foreground">{moment(post.criado_em).fromNow()}</p>
           </div>
         </div>
         {isOwner && (
@@ -123,7 +95,7 @@ export default function PostCard({ post, user, onUpdate }) {
           }`}
         >
           <Heart className={`w-4 h-4 ${liked ? "fill-current" : ""}`} />
-          {curtidas.length > 0 && curtidas.length}
+          {totalCurtidas > 0 && totalCurtidas}
         </button>
         <button
           onClick={() => setShowComments(!showComments)}
@@ -138,7 +110,7 @@ export default function PostCard({ post, user, onUpdate }) {
       {showComments && (
         <div className="mt-4 space-y-3">
           {comentarios.map((c) => (
-            <CommentItem key={c.id} comentario={c} />
+            <CommentItem key={c.id} comentario={c} user={user} onDelete={handleDeleteComment} />
           ))}
           {user && (
             <div className="flex gap-2">
@@ -160,19 +132,34 @@ export default function PostCard({ post, user, onUpdate }) {
   );
 }
 
-function CommentItem({ comentario }) {
-  const [autor, setAutor] = useState(null);
-  useEffect(() => {
-    base44.entities.User.get(comentario.autor).then(setAutor).catch(() => {});
-  }, [comentario.autor]);
+const handleDeleteComment = async (comentarioId) => {
+    try {
+      await norteens.apagarComentario(comentarioId);
+      const updated = await norteens.getComentarios(post.id);
+      setComentarios(updated);
+    } catch { /* ignora */ }
+  };
+
+function CommentItem({ comentario, user, onDelete }) {
+  const autor = {
+    nome: comentario.autor_nome,
+    apelido: comentario.autor_apelido,
+    foto_url: comentario.autor_foto,
+  };
+  const isOwner = user && comentario.autor_id === user.id;
 
   return (
-    <div className="bg-muted/50 rounded-xl px-4 py-3 flex gap-2.5">
+    <div className="bg-muted/50 rounded-xl px-4 py-3 flex gap-2.5 items-start">
       <UserAvatar user={autor} size="sm" />
-      <div>
-        <p className="text-xs font-medium text-foreground">{autor?.nome || autor?.apelido || autor?.full_name || autor?.email || "Usuário"}</p>
+      <div className="flex-1">
+        <p className="text-xs font-medium text-foreground">{autor.nome || autor.apelido || "Usuário"}</p>
         <p className="text-sm text-muted-foreground mt-1">{comentario.texto}</p>
       </div>
+      {isOwner && (
+        <button onClick={() => onDelete(comentario.id)} className="text-muted-foreground hover:text-destructive transition-colors">
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      )}
     </div>
   );
 }
