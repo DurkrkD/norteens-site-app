@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
 import { norteens } from "@/api/norteensClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +18,7 @@ export default function ConfigPerfil() {
     bio: user?.bio || "",
     serie_idade: user?.serie_idade || "",
     cidade: user?.cidade || "",
-    foto_perfil: user?.foto_perfil || "",
+    foto_url: user?.foto_url || "",
   });
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -29,7 +28,11 @@ export default function ConfigPerfil() {
     if (!file) return;
     setUploading(true);
     try {
-      toast({ title: "Envio de foto em breve!", description: "Essa função ainda será ativada." });
+      const url = await norteens.uploadImagem(file);
+      setForm((prev) => ({ ...prev, foto_url: url }));
+      const atualizado = await norteens.updateMe({ foto_url: url });
+      setUser(atualizado);
+      toast({ title: "Foto atualizada com sucesso!" });
     } catch {
       toast({ title: "Erro ao enviar foto.", variant: "destructive" });
     }
@@ -45,6 +48,7 @@ export default function ConfigPerfil() {
         bio: form.bio.trim(),
         serie_idade: form.serie_idade.trim(),
         cidade: form.cidade.trim(),
+        foto_url: form.foto_url,
       });
       setUser(atualizado);
       toast({ title: "Perfil salvo com sucesso!" });
@@ -75,9 +79,13 @@ export default function ConfigPerfil() {
               disabled={uploading}
             />
           </label>
-          {form.foto_perfil && (
+          {form.foto_url && (
             <button
-              onClick={() => setForm((prev) => ({ ...prev, foto_perfil: "" }))}
+              onClick={async () => {
+                setForm((prev) => ({ ...prev, foto_url: "" }));
+                const atualizado = await norteens.updateMe({ foto_url: "" });
+                setUser(atualizado);
+              }}
               className="ml-2 text-sm text-muted-foreground hover:text-destructive transition-colors"
             >
               Remover

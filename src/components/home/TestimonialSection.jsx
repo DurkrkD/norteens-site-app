@@ -1,32 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { norteens } from "@/api/norteensClient";
 
 export default function TestimonialSection() {
   const [feedbacks, setFeedbacks] = useState([]);
-  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        const [data, userData] = await Promise.all([
-          base44.entities.Feedback.filter({ autorizar_exibicao: true }, "-created_date", 10),
-          base44.entities.User.list(),
-        ]);
-        setFeedbacks(data);
-        setUsers(userData);
-      } catch {
+    norteens.listarFeedbacksPublicos()
+      .then(setFeedbacks)
+      .catch(() => {
         // silently ignore — section stays hidden
-      }
-      setLoading(false);
-    };
-    load();
+      })
+      .finally(() => setLoading(false));
   }, []);
-
-  const getUserName = (id) => {
-    const u = users.find((u) => u.id === id);
-    return u ? u.nome || u.apelido || u.full_name || u.email?.split("@")[0] || "Usuário" : "Usuário";
-  };
 
   if (loading || feedbacks.length === 0) return null;
 
@@ -53,7 +39,7 @@ export default function TestimonialSection() {
           </blockquote>
           <div className="mt-6 relative">
             <b className="block text-[15px]" style={{ color: "#E07A5F" }}>
-              {getUserName(fb.autor)}
+              {fb.autor_nome || fb.autor_apelido || "Usuário"}
             </b>
             <span className="text-sm" style={{ color: "#726A5F" }}>
               Usuário Norteens

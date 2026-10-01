@@ -78,6 +78,23 @@ export const norteens = {
     localStorage.removeItem('token');
   },
 
+  // envia as respostas do teste comportamental e recebe o usuário com o perfil calculado
+  async calcularTeste(respostas) {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Não autenticado');
+    const resposta = await fetch(`${API_URL}/teste/calcular`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ respostas })
+    });
+    const dados = await resposta.json();
+    if (!resposta.ok) throw new Error(dados.erro || 'Erro ao calcular o resultado do teste');
+    return dados;
+  },
+
   // lista todas as profissões
   async listarProfissoes() {
     const resposta = await fetch(`${API_URL}/profissoes`);
@@ -104,6 +121,46 @@ export const norteens = {
     const resposta = await fetch(`${API_URL}/famosos`);
     if (!resposta.ok) throw new Error('Erro ao buscar famosos');
     return await resposta.json();
+  },
+
+  // envia uma imagem (post ou foto de perfil) e devolve a URL pública dela
+  async uploadImagem(file) {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Não autenticado');
+    const formData = new FormData();
+    formData.append('imagem', file);
+    const resposta = await fetch(`${API_URL}/upload`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: formData
+    });
+    const dados = await resposta.json();
+    if (!resposta.ok) throw new Error(dados.erro || 'Erro ao enviar imagem');
+    return dados.url;
+  },
+
+  // pede o e-mail de redefinição de senha (sempre "sucesso", exista o e-mail ou não)
+  async esqueciSenha(email) {
+    const resposta = await fetch(`${API_URL}/esqueci-senha`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const dados = await resposta.json();
+    if (!resposta.ok) throw new Error(dados.erro || 'Erro ao pedir redefinição de senha');
+    return dados;
+  },
+
+  // troca a senha usando o token recebido por e-mail
+  async resetarSenha(token, novaSenha) {
+    const resposta = await fetch(`${API_URL}/resetar-senha`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, novaSenha })
+    });
+    const dados = await resposta.json();
+    if (!resposta.ok) throw new Error(dados.erro || 'Erro ao redefinir senha');
+    return dados;
   },
 
   // lista o feed de posts
@@ -304,6 +361,41 @@ export const norteens = {
     });
     const r = await resposta.json();
     if (!resposta.ok) throw new Error(r.erro || 'Erro ao apagar famoso');
+    return r;
+  },
+
+  // cria um feedback (precisa estar logado)
+  async criarFeedback(texto, autorizarExibicao) {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Não autenticado');
+    const resposta = await fetch(`${API_URL}/feedbacks`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ texto, autorizar_exibicao: autorizarExibicao })
+    });
+    const dados = await resposta.json();
+    if (!resposta.ok) throw new Error(dados.erro || 'Erro ao enviar feedback');
+    return dados;
+  },
+
+  // lista os feedbacks autorizados a aparecer na tela inicial (público)
+  async listarFeedbacksPublicos() {
+    const resposta = await fetch(`${API_URL}/feedbacks-publicos`);
+    if (!resposta.ok) throw new Error('Erro ao buscar feedbacks');
+    return await resposta.json();
+  },
+
+  // [ADMIN] lista todos os feedbacks recebidos
+  async listarFeedbacksAdmin() {
+    const token = localStorage.getItem('token');
+    const resposta = await fetch(`${API_URL}/feedbacks-admin`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const r = await resposta.json();
+    if (!resposta.ok) throw new Error(r.erro || 'Erro ao listar feedbacks');
     return r;
   },
 

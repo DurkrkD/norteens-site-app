@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Link, useOutletContext } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
 import { norteens } from "@/api/norteensClient";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";

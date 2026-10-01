@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, LogOut, Search, User, Settings } from "lucide-react";
-import { base44 } from "@/api/base44Client";
 import { norteens } from "@/api/norteensClient";
 import { todosConcluidos, calcularNivel } from "@/utils/progresso";
 import UserAvatar from "@/components/UserAvatar";

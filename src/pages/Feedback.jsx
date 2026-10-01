@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useOutletContext, useNavigate, Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { norteens } from "@/api/norteensClient";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
@@ -39,11 +39,7 @@ export default function Feedback() {
     if (!texto.trim()) return;
     setSubmitting(true);
     try {
-      await base44.entities.Feedback.create({
-        autor: user.id,
-        texto: texto.trim(),
-        autorizar_exibicao: autorizar,
-      });
+      await norteens.criarFeedback(texto.trim(), autorizar);
       setSubmitting(false);
       setSent(true);
       setTexto("");

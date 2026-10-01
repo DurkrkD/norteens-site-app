@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import MobileBottomTabs from "@/components/layout/MobileBottomTabs";
-import NoChat from "@/components/assistente/NoChat";
 import { norteens } from "@/api/norteensClient";
 import { applyUserColor } from "@/utils/userColor";
 
@@ -39,7 +38,6 @@ export default function AppLayout() {
         <Outlet context={{ user, setUser }} />
       </main>
       <MobileBottomTabs />
-      <NoChat />
     </div>
   );
 }

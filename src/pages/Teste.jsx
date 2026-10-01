@@ -1,20 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { useOutletContext, useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
 import { norteens } from "@/api/norteensClient";
+import { PERGUNTAS_TESTE } from "@/data/perguntasTeste";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/components/ui/use-toast";
 import { ChevronLeft, ChevronRight, Send } from "lucide-react";
 
+const respostasIniciais = () => {
+  /** @type {Record<number, number>} */
+  const initial = {};
+  PERGUNTAS_TESTE.forEach((p) => (initial[p.id] = 50));
+  return initial;
+};
+
 export default function Teste() {
   const { user, setUser } = useOutletContext();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [perguntas, setPerguntas] = useState([]);
-  const [respostas, setRespostas] = useState({});
+  const [respostas, setRespostas] = useState(respostasIniciais);
   const [current, setCurrent] = useState(0);
-  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -24,67 +29,34 @@ export default function Teste() {
     }
     if (user.teste_feito) {
       navigate("/resultado");
-      return;
     }
-    base44.entities.Pergunta.list("ordem").then((data) => {
-      setPerguntas(data);
-      const initial = {};
-      data.forEach((p) => (initial[p.id] = 50));
-      setRespostas(initial);
-      setLoading(false);
-    });
   }, [user, navigate]);
 
   const handleSubmit = async () => {
     setSubmitting(true);
-    const formatted = perguntas.map((p) => ({
-      enunciado: p.enunciado,
-      esquerdo: p.lado_esquerdo,
-      direito: p.lado_direito,
-      valor: respostas[p.id],
-    }));
+    try {
+      const respostasFormatadas = PERGUNTAS_TESTE.map((p) => ({
+        id: p.id,
+        valor: respostas[p.id],
+      }));
 
-    const result = await base44.integrations.Core.InvokeLLM({
-      prompt: `Você é um orientador de carreira. Analise as respostas de um teste comportamental e forneça um perfil de personalidade profissional detalhado em português do Brasil.
+      const atualizado = await norteens.calcularTeste(respostasFormatadas);
 
-As perguntas são em formato de escala: 0 = totalmente alinhado com o lado esquerdo, 100 = totalmente alinhado com o lado direito, 50 = neutro.
-
-Respostas:
-${formatted.map((r, i) => `${i + 1}. "${r.enunciado}" (${r.esquerdo} ←→ ${r.direito}): ${r.valor}/100`).join("\n")}
-
-Forneça um perfil comportamental profissional completo com: pontos fortes, áreas de desenvolvimento, estilo de trabalho preferido, e tipos de carreiras recomendadas. Seja acolhedor e motivador. Máximo 800 palavras.`,
-      model: "claude_sonnet_4_6",
-    });
-
-    await base44.auth.updateMe({
-      teste_feito: true,
-      perfil_resultado: result,
-      marco_teste: true,
-    });
-
-    setUser({ ...user, teste_feito: true, perfil_resultado: result, marco_teste: true });
-    toast({ title: "Teste concluído!", description: "Veja seu resultado agora." });
-    navigate("/resultado");
+      setUser(atualizado);
+      toast({ title: "Teste concluído!", description: "Veja seu resultado agora." });
+      navigate("/resultado");
+    } catch (error) {
+      const mensagem = error instanceof Error ? error.message : "Tente novamente.";
+      toast({ title: "Erro ao calcular o resultado", description: mensagem, variant: "destructive" });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-      </div>
-    );
-  }
+  if (!user || user.teste_feito) return null;
 
-  if (perguntas.length === 0) {
-    return (
-      <div className="max-w-2xl mx-auto px-4 py-20 text-center">
-        <p className="text-muted-foreground">Nenhuma pergunta cadastrada ainda. Aguarde o administrador configurar o teste.</p>
-      </div>
-    );
-  }
-
-  const pergunta = perguntas[current];
-  const progress = ((current + 1) / perguntas.length) * 100;
+  const pergunta = PERGUNTAS_TESTE[current];
+  const progress = ((current + 1) / PERGUNTAS_TESTE.length) * 100;
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
@@ -94,7 +66,7 @@ Forneça um perfil comportamental profissional completo com: pontos fortes, áre
       {/* Progress */}
       <div className="mb-8">
         <div className="flex justify-between text-sm text-muted-foreground mb-2">
-          <span>Pergunta {current + 1} de {perguntas.length}</span>
+          <span>Pergunta {current + 1} de {PERGUNTAS_TESTE.length}</span>
           <span>{Math.round(progress)}%</span>
         </div>
         <div className="h-2 bg-muted rounded-full overflow-hidden">
@@ -137,7 +109,7 @@ Forneça um perfil comportamental profissional completo com: pontos fortes, áre
           <ChevronLeft className="w-4 h-4 mr-1" /> Anterior
         </Button>
 
-        {current === perguntas.length - 1 ? (
+        {current === PERGUNTAS_TESTE.length - 1 ? (
           <Button onClick={handleSubmit} disabled={submitting} className="bg-primary hover:bg-primary/90">
             {submitting ? (
               <>

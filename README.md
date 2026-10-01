@@ -1,77 +1,38 @@
-# Base44 Project
+# Norteens
 
-Use this repository to run and edit the app locally, then publish changes back through Base44.
+Aplicativo de orientação de carreira para adolescentes brasileiros.
 
-Any change pushed to the repo will also be reflected in the Base44 Builder.
+- **Frontend** (este repositório): React + Vite + Tailwind.
+- **Backend**: Node/Express + PostgreSQL, em `../server` (repositório separado).
 
-## Prerequisites
+## Rodando localmente
 
-1. Clone the repository using the project's Git URL.
-2. Navigate to the project directory.
-3. Install dependencies: `npm install`.
-4. Install the Base44 CLI: `npm install -g base44@latest`.
+1. Instale as dependências do frontend: `npm install`.
+2. Suba o backend (em outro terminal, dentro da pasta `server`):
+   ```bash
+   node app.js
+   ```
+   Ele escuta em `http://localhost:3000`. **Não use `npm start`** nessa pasta — hoje ele aponta para um arquivo antigo (`server.js`) sem relação com a API real.
+3. Suba o frontend:
+   ```bash
+   npm run dev
+   ```
+   Abra a URL local impressa pelo Vite (normalmente `http://localhost:5173`).
 
-See the [Base44 CLI docs](https://docs.base44.com/developers/references/cli/get-started/overview) if you want to run Base44 commands directly.
+O frontend fala com o backend por um único cliente, `src/api/norteensClient.js`, que aponta para `http://localhost:3000`.
 
-## Run Locally
+## Variáveis de ambiente do backend
 
-Run the full local development environment from the project root:
+Configuradas em `server/.env`:
 
-```bash
-base44 dev
-```
+- `DB_PASSWORD`: senha do Postgres local.
+- `JWT_SECRET`: segredo usado para assinar os tokens de login.
+- `RESEND_API_KEY`: chave da conta no [Resend](https://resend.com), usada para enviar o e-mail de redefinição de senha.
+- `EMAIL_FROM`: remetente dos e-mails (ex: `Norteens <onboarding@resend.dev>`).
+- `FRONTEND_URL`: URL do frontend, usada para montar o link de redefinição de senha.
 
-`base44 dev` starts the local Base44 development backend and, when this app is configured for it, also starts the frontend dev server for you. Use the frontend URL printed by the command.
+## Scripts úteis
 
-For example, when the Base44 project config includes a `serveCommand`, `base44 dev` can launch the frontend too:
-
-```json5
-{
-  "site": {
-    "serveCommand": "npm run dev"
-  }
-}
-```
-
-In a Base44 project this lives in `base44/config.jsonc`.
-
-## Run Only The Frontend
-
-If you only want to work on the frontend against the hosted Base44 backend, run:
-
-```bash
-npm run dev
-```
-
-Open the local URL printed by Vite.
-
-## Use The Hosted Backend
-
-For frontend-only development, create or update `.env.local` in the project root:
-
-```bash
-VITE_BASE44_APP_ID=your_app_id
-VITE_BASE44_APP_BASE_URL=https://your-app.base44.app
-```
-
-`VITE_BASE44_APP_ID` identifies the Base44 app.
-
-`VITE_BASE44_APP_BASE_URL` tells the Base44 Vite plugin where to send local `/api` requests. Point it at your deployed Base44 app URL when you want the local frontend to use the hosted backend.
-
-When you use `base44 dev`, the command injects the local Base44 values for you, so `.env.local` is mainly needed for frontend-only workflows.
-
-## Publish Your Changes
-
-After pushing your changes to git, open the Base44 dashboard and publish the app:
-
-```bash
-base44 dashboard open
-```
-
-## Docs & Support
-
-Documentation: [https://docs.base44.com/Integrations/Using-GitHub](https://docs.base44.com/Integrations/Using-GitHub)
-
-Base44 CLI command reference: [https://docs.base44.com/developers/references/cli/commands/introduction](https://docs.base44.com/developers/references/cli/commands/introduction)
-
-Support: [https://app.base44.com/support](https://app.base44.com/support)
+- `npm run lint` / `npm run lint:fix`
+- `npm run typecheck`
+- `npm run build` / `npm run preview`
