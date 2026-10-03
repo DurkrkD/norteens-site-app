@@ -16,7 +16,10 @@ This app started as a Base44 platform prototype. **That dependency has been full
 - `../server/app.js`: all backend routes (auth, perfil, profissões, famosos, comunidade, teste comportamental, feedback, upload, redefinição de senha).
 - `../server/conexao.js`: PostgreSQL connection pool (has a `pool.on('error')` handler — keep it, or a dropped idle connection crashes the API).
 - `../server/email.js`: Resend-based email sending (password reset). The Resend SDK returns `{ error }` instead of throwing — always check it.
-- `../server/schema.sql`: the full, idempotent database schema. Update it whenever a route needs a new table/column.
+- `../server/schema.sql`: the full, idempotent database schema, applied automatically every time the API starts. Update it whenever a route needs a new table/column (keep it re-runnable).
+- Uploaded images live in the `imagens` table (served at `GET /uploads/:id`), not on disk — free hosting wipes the disk on each deploy.
+- Deploy: `../server/render.yaml` (Render Blueprint: API + static site) and `../server/DEPLOY.md`. Config comes from env vars: `DATABASE_URL` (Neon; local falls back to `DB_PASSWORD`), `JWT_SECRET`, `RESEND_API_KEY`, `EMAIL_FROM`, `FRONTEND_URL`, `PORT` on the API and `VITE_API_URL` on the site. Never hardcode `localhost`.
+- `C:\dev\Abrir Norteens.cmd` starts DB + API + site locally in one click.
 - `C:\dev\postgres\`: local PostgreSQL 18 (data in `data\`, binaries in `pgsql\`, start/stop via `iniciar-banco.cmd` / `parar-banco.cmd`). It is not a Windows service.
 
 ## Working Notes

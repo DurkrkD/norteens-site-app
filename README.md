@@ -5,7 +5,18 @@ Aplicativo de orientação de carreira para adolescentes brasileiros.
 - **Frontend** (este repositório): React + Vite + Tailwind.
 - **Backend**: Node/Express + PostgreSQL, em `../server` (repositório separado).
 
-## Rodando localmente
+## Abrir o site no seu PC (jeito fácil)
+
+Dois cliques em **`C:\dev\Abrir Norteens.cmd`**. Ele liga o banco, a API e o site e abre o navegador
+em `http://localhost:5173`. Fechar a janela dele desliga o site.
+
+## Colocar online
+
+Passo a passo em [`../server/DEPLOY.md`](../server/DEPLOY.md) (Render + Neon, grátis).
+O endereço da API vem da variável `VITE_API_URL` (o Render preenche sozinho); sem ela, o site usa
+`http://localhost:3000`.
+
+## Rodando localmente (passo a passo manual)
 
 1. **Ligue o banco**: dê dois cliques em `C:\dev\postgres\iniciar-banco.cmd`.
    Ele abre o PostgreSQL numa janela minimizada ("PostgreSQL Norteens") — deixe-a aberta
