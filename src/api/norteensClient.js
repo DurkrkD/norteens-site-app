@@ -1,8 +1,12 @@
 // Cliente que fala com o NOSSO servidor.
-// No seu PC: localhost:3000. Online: VITE_API_URL, preenchida pelo Render na hora do build
-// (ele manda só o nome do servidor, ex. "norteens-api.onrender.com", então completamos o https://).
-const base = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-const API_URL = base.startsWith('http') ? base : `https://${base}`;
+// No seu PC: localhost:3000. Online: VITE_API_URL, preenchida pelo Render na hora do build.
+// O Render manda só o NOME do serviço ("norteens-api", sem domínio), então completamos
+// o ".onrender.com" e o "https://" quando faltarem.
+function enderecoCompleto(valor) {
+  if (valor.startsWith('http')) return valor;
+  return `https://${valor.includes('.') ? valor : `${valor}.onrender.com`}`;
+}
+const API_URL = enderecoCompleto(import.meta.env.VITE_API_URL || 'http://localhost:3000');
 
 export const norteens = {
   // faz login e guarda o token (crachá) no navegador
