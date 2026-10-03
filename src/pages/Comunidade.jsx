@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useOutletContext } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { Link, useOutletContext } from "react-router-dom";
+import { MessagesSquare } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { PageContainer, PageHeader, PageLoading, EmptyState } from "@/components/layout/Page";
 import { norteens } from "@/api/norteensClient";
 import PostCard from "@/components/community/PostCard";
 import CreatePost from "@/components/community/CreatePost";
@@ -14,8 +16,11 @@ export default function Comunidade() {
   const [loading, setLoading] = useState(true);
 
   const loadPosts = useCallback(async () => {
-    const data = await norteens.listarPosts();
-    setPosts(data);
+    try {
+      setPosts(await norteens.listarPosts());
+    } catch {
+      /* mantém o que já estava na tela */
+    }
     setLoading(false);
   }, []);
 
@@ -29,32 +34,43 @@ export default function Comunidade() {
 
   const { pullDistance, refreshing, progress, containerProps } = usePullToRefresh(loadPosts);
 
-  if (loading) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-      </div>
-    );
-  }
+  if (loading) return <PageLoading />;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12" {...containerProps}>
+    <PageContainer size="sm" {...containerProps}>
       <PullToRefreshIndicator pullDistance={pullDistance} refreshing={refreshing} progress={progress} />
 
-      <h1 className="font-heading text-3xl sm:text-4xl font-bold text-accent mb-2">Comunidade</h1>
-      <p className="text-muted-foreground mb-8">Compartilhe experiências e conecte-se com outros estudantes.</p>
+      <PageHeader
+        eyebrow="Juntos é mais fácil"
+        title="Comunidade"
+        description="Compartilhe dúvidas e descobertas com outros jovens que também estão decidindo o futuro."
+      />
 
-      {user && <CreatePost user={user} onCreated={loadPosts} />}
+      {user ? (
+        <CreatePost user={user} onCreated={loadPosts} />
+      ) : (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-card border border-border">
+          <div>
+            <p className="font-heading font-semibold text-foreground">Quer participar da conversa?</p>
+            <p className="text-sm text-muted-foreground mt-0.5">Entre na sua conta para publicar, curtir e comentar.</p>
+          </div>
+          <Button asChild className="shrink-0">
+            <Link to="/login">Entrar</Link>
+          </Button>
+        </div>
+      )}
 
-      <div className="space-y-6 mt-8">
+      <div className="space-y-5 mt-8">
         {posts.length === 0 ? (
-          <p className="text-center text-muted-foreground py-12">Nenhuma publicação ainda. Seja o primeiro!</p>
+          <EmptyState
+            icon={MessagesSquare}
+            title="Nenhuma publicação ainda"
+            description="Que tal ser a primeira pessoa a puxar assunto?"
+          />
         ) : (
-          posts.map((post) => (
-            <PostCard key={post.id} post={post} user={user} onUpdate={loadPosts} />
-          ))
+          posts.map((post) => <PostCard key={post.id} post={post} user={user} onUpdate={loadPosts} />)
         )}
       </div>
-    </div>
+    </PageContainer>
   );
 }

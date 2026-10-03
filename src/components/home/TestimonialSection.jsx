@@ -1,32 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { norteens } from "@/api/norteensClient";
 
 export default function TestimonialSection() {
   const [feedbacks, setFeedbacks] = useState([]);
-  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        const [data, userData] = await Promise.all([
-          base44.entities.Feedback.filter({ autorizar_exibicao: true }, "-created_date", 10),
-          base44.entities.User.list(),
-        ]);
-        setFeedbacks(data);
-        setUsers(userData);
-      } catch {
+    norteens.listarFeedbacksPublicos()
+      .then(setFeedbacks)
+      .catch(() => {
         // silently ignore — section stays hidden
-      }
-      setLoading(false);
-    };
-    load();
+      })
+      .finally(() => setLoading(false));
   }, []);
-
-  const getUserName = (id) => {
-    const u = users.find((u) => u.id === id);
-    return u ? u.nome || u.apelido || u.full_name || u.email?.split("@")[0] || "Usuário" : "Usuário";
-  };
 
   if (loading || feedbacks.length === 0) return null;
 
@@ -35,31 +21,22 @@ export default function TestimonialSection() {
   return (
     <section className="py-16 sm:py-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div
-          className="rounded-[30px] py-16 px-8 sm:px-10 text-center relative overflow-hidden border border-border shadow-soft"
-          style={{ background: "#FFFDF8" }}
-        >
-          {/* decorative dots */}
-          <span className="absolute w-2 h-2 rounded-full top-10 left-14" style={{ background: "#E8B04B" }} />
-          <span className="absolute w-2.5 h-2.5 rounded-full bottom-12 right-16" style={{ background: "#E07A5F" }} />
-          <span className="absolute w-1.5 h-1.5 rounded-full top-16 right-28" style={{ background: "#7E8E5B" }} />
-          <span className="absolute w-1.5 h-1.5 rounded-full bottom-20 left-28" style={{ background: "#7E8E5B" }} />
+        <figure className="rounded-[28px] py-14 sm:py-16 px-8 sm:px-10 text-center relative overflow-hidden border border-border bg-card shadow-soft">
+          {/* pontinhos decorativos */}
+          <span className="absolute w-2 h-2 rounded-full top-10 left-14 bg-highlight" />
+          <span className="absolute w-2.5 h-2.5 rounded-full bottom-12 right-16 bg-accent" />
+          <span className="absolute w-1.5 h-1.5 rounded-full top-16 right-28 bg-secondary/60" />
+          <span className="absolute w-1.5 h-1.5 rounded-full bottom-20 left-28 bg-secondary/60" />
 
-          <blockquote
-            className="font-heading text-xl sm:text-[2.1rem] font-medium leading-[1.32] max-w-[28ch] mx-auto relative"
-            style={{ color: "#2B2A26" }}
-          >
-            "{fb.texto}"
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-accent mb-5">Quem já passou por aqui</p>
+          <blockquote className="font-heading text-xl sm:text-[2rem] font-medium leading-[1.32] max-w-[30ch] mx-auto relative text-foreground">
+            “{fb.texto}”
           </blockquote>
-          <div className="mt-6 relative">
-            <b className="block text-[15px]" style={{ color: "#E07A5F" }}>
-              {getUserName(fb.autor)}
-            </b>
-            <span className="text-sm" style={{ color: "#726A5F" }}>
-              Usuário Norteens
-            </span>
-          </div>
-        </div>
+          <figcaption className="mt-6 relative">
+            <b className="block text-[15px] text-accent">{fb.autor_nome || fb.autor_apelido || "Usuário"}</b>
+            <span className="text-sm text-muted-foreground">Usuário Norteens</span>
+          </figcaption>
+        </figure>
       </div>
     </section>
   );

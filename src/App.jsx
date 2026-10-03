@@ -3,6 +3,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClientInstance } from "@/lib/query-client";
 import {
   BrowserRouter as Router,
+  Navigate,
   Route,
   Routes,
   useLocation,
@@ -11,7 +12,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ThemeProvider } from "next-themes";
 import PageNotFound from "./lib/PageNotFound";
 import { AuthProvider, useAuth } from "@/lib/AuthContext";
-import UserNotRegisteredError from "@/components/UserNotRegisteredError";
 import ScrollToTop from "./components/ScrollToTop";
 
 // Auth pages
@@ -31,7 +31,7 @@ import Resultado from "@/pages/Resultado";
 import Comunidade from "@/pages/Comunidade";
 import Configuracoes from "@/pages/Configuracoes";
 import Feedback from "@/pages/Feedback";
-import FeedbacksRecebidos from "@/pages/FeedbacksRecebidos";
+import Painel from "@/pages/Painel";
 
 const pageVariants = {
   initial: { opacity: 0, x: 20 },
@@ -70,7 +70,10 @@ const AnimatedRoutes = () => {
             <Route path="/resultado" element={<Resultado />} />
             <Route path="/configuracoes" element={<Configuracoes />} />
             <Route path="/feedback" element={<Feedback />} />
-            <Route path="/feedbacks-recebidos" element={<FeedbacksRecebidos />} />
+            <Route path="/painel" element={<Painel />} />
+            <Route path="/painel/:secao" element={<Painel />} />
+            {/* endereço antigo da lista de feedbacks */}
+            <Route path="/feedbacks-recebidos" element={<Navigate to="/painel/feedbacks" replace />} />
           </Route>
 
           <Route path="*" element={<PageNotFound />} />
@@ -81,20 +84,14 @@ const AnimatedRoutes = () => {
 };
 
 const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
+  const { isLoadingAuth } = useAuth();
 
-  if (isLoadingPublicSettings || isLoadingAuth) {
+  if (isLoadingAuth) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-background">
         <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
       </div>
     );
-  }
-
-  if (authError) {
-    if (authError.type === "user_not_registered") {
-      return <UserNotRegisteredError />;
-    }
   }
 
   return <AnimatedRoutes />;

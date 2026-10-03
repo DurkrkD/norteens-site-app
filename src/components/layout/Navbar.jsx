@@ -1,17 +1,13 @@
 import React, { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, LogOut, Search, User, Settings } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import { Menu, LogOut, Settings, LayoutDashboard, MessageSquareHeart } from "lucide-react";
 import { norteens } from "@/api/norteensClient";
-import { todosConcluidos, calcularNivel } from "@/utils/progresso";
+import { MARCOS, calcularNivel } from "@/utils/progresso";
+import { PAPEIS, isEquipe } from "@/utils/papeis";
 import UserAvatar from "@/components/UserAvatar";
+import Logo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,22 +17,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const Logo = () => (
-  <svg viewBox="0 0 32 32" fill="none" className="w-6 h-6 shrink-0">
-    <circle cx="16" cy="16" r="14.5" stroke="var(--primary)" strokeWidth="2" />
-    <path d="M16 5 L19.5 16 L16 27 L12.5 16 Z" fill="var(--primary)" />
-    <path d="M5 16 L16 12.5 L27 16 L16 19.5 Z" fill="var(--accent)" />
-    <circle cx="16" cy="16" r="2.4" fill="var(--background)" />
-  </svg>
-);
+const sair = () => {
+  norteens.logout();
+  window.location.href = "/";
+};
 
 export default function Navbar({ user }) {
   const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
   const location = useLocation();
-  const navigate = useNavigate();
   const nivel = calcularNivel(user);
-  const totalNiveis = 4;
+  const equipe = isEquipe(user);
+  const nome = user?.nome || user?.apelido || user?.email;
 
   const links = [
     { to: "/", label: "Início" },
@@ -44,185 +35,204 @@ export default function Navbar({ user }) {
     { to: "/famosos", label: "Famosos" },
     { to: "/comunidade", label: "Comunidade" },
   ];
-  if (user && !user.teste_feito) links.push({ to: "/teste", label: "Teste" });
-  if (user && user.teste_feito) links.push({ to: "/resultado", label: "Meu Resultado" });
-  if (user) links.push({ to: "/feedback", label: "Feedback" });
-  if (user?.papel === "dono") links.push({ to: "/feedbacks-recebidos", label: "Feedbacks Recebidos" });
-  if (user) links.push({ to: "/configuracoes", label: "Configurações" });
+  if (user) {
+    links.push(user.teste_feito ? { to: "/resultado", label: "Meu resultado" } : { to: "/teste", label: "Teste" });
+  }
 
-  const isActive = (path) => location.pathname === path;
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    navigate("/profissoes");
-    setSearch("");
-  };
+  const linkDesktop = ({ isActive }) =>
+    `relative px-3 py-2 text-sm font-medium rounded-full transition-colors ${
+      isActive ? "text-foreground bg-muted" : "text-muted-foreground hover:text-foreground"
+    }`;
 
   return (
     <nav
-      className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border shadow-soft select-none"
+      className="sticky top-0 z-40 bg-background/85 backdrop-blur-md border-b border-border/80 select-none"
       style={{ paddingTop: "env(safe-area-inset-top)" }}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center h-16 gap-4">
-          {/* LEFT: menu + logo */}
+        <div className="flex items-center h-16 gap-6">
+          <Logo />
+
+          {/* links (desktop) */}
+          <div className="hidden lg:flex items-center gap-1 flex-1">
+            {links.map((l) => (
+              <NavLink key={l.to} to={l.to} end={l.to === "/"} className={linkDesktop}>
+                {l.label}
+              </NavLink>
+            ))}
+          </div>
+          <div className="flex-1 lg:hidden" />
+
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setOpen(true)}
-              className="p-2.5 rounded-[12px] border border-border bg-card text-foreground hover:bg-muted transition-colors"
-              aria-label="Abrir menu"
-            >
-              <Menu className="w-5 h-5" />
-            </button>
-            <Link to="/" className="flex items-center gap-2 font-heading font-semibold text-xl tracking-tight text-foreground">
-              <Logo />
-              Norteens
-            </Link>
-          </div>
-
-          {/* CENTER: search (desktop only) */}
-          <div className="flex-1 hidden md:flex justify-center">
-            <form onSubmit={handleSearch} className="relative w-full max-w-xs">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Buscar profissões..."
-                className="w-full pl-9 pr-4 h-9 rounded-full bg-muted/60 border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:bg-card transition-colors"
-              />
-            </form>
-          </div>
-
-          {/* spacer for mobile when search is hidden */}
-          <div className="flex-1 md:hidden" />
-
-          {/* RIGHT */}
-          <div className="flex items-center gap-2.5">
             {!user ? (
               <>
-                <Button variant="outline" size="sm" asChild>
+                <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
                   <Link to="/login">Entrar</Link>
                 </Button>
-                <Button size="sm" asChild className="hidden sm:inline-flex">
-                  <Link to="/teste">Fazer teste</Link>
+                <Button size="sm" asChild>
+                  <Link to="/register">Criar conta</Link>
                 </Button>
               </>
             ) : (
               <>
-                {/* Progress indicator - desktop only */}
-                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/60">
-                  <span className="text-xs font-medium text-muted-foreground">Nível {nivel} de {totalNiveis}</span>
-                  <div className="w-16 h-1.5 rounded-full bg-border overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-primary transition-all"
-                      style={{ width: `${(nivel / totalNiveis) * 100}%` }}
-                    />
-                  </div>
-                </div>
+                {equipe && (
+                  <Button variant="outline" size="sm" asChild className="hidden md:inline-flex">
+                    <Link to="/painel">
+                      <LayoutDashboard /> Painel
+                    </Link>
+                  </Button>
+                )}
 
-                {/* Avatar dropdown */}
+                {!equipe && (
+                  <Link
+                    to="/"
+                    title="Sua jornada de exploração"
+                    className="hidden md:flex items-center gap-2.5 h-8 px-3 rounded-full border border-border bg-card hover:bg-muted transition-colors"
+                  >
+                    <span className="text-xs font-medium text-muted-foreground">
+                      Jornada {nivel}/{MARCOS.length}
+                    </span>
+                    <span className="w-14 h-1.5 rounded-full bg-muted overflow-hidden">
+                      <span
+                        className="block h-full rounded-full bg-accent transition-all"
+                        style={{ width: `${(nivel / MARCOS.length) * 100}%` }}
+                      />
+                    </span>
+                  </Link>
+                )}
+
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="rounded-full hover:ring-2 hover:ring-primary/30 transition-all" aria-label="Menu do usuário">
+                    <button
+                      className="rounded-full ring-offset-2 ring-offset-background hover:ring-2 hover:ring-border focus-visible:ring-2 focus-visible:ring-ring transition-all"
+                      aria-label="Menu da conta"
+                    >
                       <UserAvatar user={user} size="md" />
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuContent align="end" className="w-60">
                     <DropdownMenuLabel className="font-normal">
-                      <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none text-foreground">
-                          {user.nome || user.apelido || user.full_name || user.email}
-                        </p>
-                        <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-semibold text-foreground truncate">{nome}</p>
+                        {equipe && <PapelBadge papel={user.papel} />}
                       </div>
+                      <p className="text-xs text-muted-foreground truncate mt-0.5">{user.email}</p>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
+                    {equipe && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/painel" className="cursor-pointer">
+                          <LayoutDashboard className="w-4 h-4" /> Painel da equipe
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem asChild>
-                      <Link to="/configuracoes" className="flex items-center gap-2 cursor-pointer">
-                        <User className="w-4 h-4" /> Meu perfil
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/configuracoes" className="flex items-center gap-2 cursor-pointer">
+                      <Link to="/configuracoes" className="cursor-pointer">
                         <Settings className="w-4 h-4" /> Configurações
                       </Link>
                     </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/feedback" className="cursor-pointer">
+                        <MessageSquareHeart className="w-4 h-4" /> Deixar feedback
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={() => { norteens.logout(); window.location.href = "/"; }}
-                      className="flex items-center gap-2 text-destructive cursor-pointer"
-                    >
+                    <DropdownMenuItem onClick={sair} className="text-destructive focus:text-destructive cursor-pointer">
                       <LogOut className="w-4 h-4" /> Sair
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </>
             )}
+
+            <button
+              onClick={() => setOpen(true)}
+              className="lg:hidden p-2 -mr-2 rounded-full text-foreground hover:bg-muted transition-colors"
+              aria-label="Abrir menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Side drawer */}
+      {/* menu lateral (celular e tablet) */}
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="right" className="w-72 sm:max-w-xs flex flex-col p-0">
-          <SheetHeader className="px-5 pt-5 pb-3 border-b border-border flex-row items-center justify-between space-y-0">
-            <SheetTitle className="font-heading text-lg font-semibold">
-              Menu
-            </SheetTitle>
+          <SheetHeader className="px-5 h-16 border-b border-border flex-row items-center space-y-0">
+            <SheetTitle className="text-base">Menu</SheetTitle>
           </SheetHeader>
 
           {user && (
             <div className="px-5 py-4 border-b border-border flex items-center gap-3">
               <UserAvatar user={user} size="lg" />
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-foreground truncate">
-                  {user.nome || user.apelido || user.full_name || user.email}
-                </p>
-                <p className="text-xs text-muted-foreground truncate">
-                  {user.email}
-                </p>
+                <p className="text-sm font-semibold text-foreground truncate">{nome}</p>
+                <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                {equipe && <div className="mt-1.5"><PapelBadge papel={user.papel} /></div>}
               </div>
             </div>
           )}
 
-          <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-1">
-            {links.map((l) => (
-              <Link
-                key={l.to}
-                to={l.to}
-                onClick={() => setOpen(false)}
-                className={`block px-4 py-3 rounded-[12px] text-[15px] font-medium transition-colors ${
-                  isActive(l.to)
-                    ? "bg-primary/12 text-primary"
-                    : "text-foreground hover:bg-muted"
-                }`}
-              >
-                {l.label}
-              </Link>
-            ))}
-          </nav>
+          <div className="flex-1 overflow-y-auto px-3 py-3 space-y-0.5">
+            {[
+              ...links,
+              ...(equipe ? [{ to: "/painel", label: "Painel da equipe" }] : []),
+              ...(user
+                ? [
+                    { to: "/feedback", label: "Deixar feedback" },
+                    { to: "/configuracoes", label: "Configurações" },
+                  ]
+                : []),
+            ].map((l) => {
+              const ativo = l.to === "/" ? location.pathname === "/" : location.pathname.startsWith(l.to);
+              return (
+                <Link
+                  key={l.to}
+                  to={l.to}
+                  onClick={() => setOpen(false)}
+                  className={`block px-4 py-2.5 rounded-xl text-[15px] font-medium transition-colors ${
+                    ativo ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  {l.label}
+                </Link>
+              );
+            })}
+          </div>
 
-          <div className="px-3 py-3 border-t border-border space-y-1">
+          <div className="px-3 py-3 border-t border-border">
             {user ? (
               <button
-                onClick={() => { norteens.logout(); setOpen(false); window.location.href = "/"; }}
-                className="w-full text-left px-4 py-3 rounded-[12px] text-sm font-medium text-muted-foreground hover:bg-muted transition-colors flex items-center gap-2"
+                onClick={sair}
+                className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors flex items-center gap-2"
               >
                 <LogOut className="w-4 h-4" /> Sair
               </button>
             ) : (
-              <Link
-                to="/login"
-                onClick={() => setOpen(false)}
-                className="block px-4 py-3 rounded-[12px] text-sm font-semibold text-primary hover:bg-primary/10 transition-colors"
-              >
-                Entrar
-              </Link>
+              <div className="grid grid-cols-2 gap-2">
+                <Button variant="outline" asChild onClick={() => setOpen(false)}>
+                  <Link to="/login">Entrar</Link>
+                </Button>
+                <Button asChild onClick={() => setOpen(false)}>
+                  <Link to="/register">Criar conta</Link>
+                </Button>
+              </div>
             )}
           </div>
         </SheetContent>
       </Sheet>
     </nav>
+  );
+}
+
+export function PapelBadge({ papel, escuro = false }) {
+  const estilo = escuro
+    ? papel === "admin" ? "bg-accent text-white" : "bg-highlight text-[#0f2e26]"
+    : papel === "admin" ? "bg-accent/15 text-accent" : "bg-secondary/15 text-secondary";
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${estilo}`}>
+      {PAPEIS[papel]?.label || papel}
+    </span>
   );
 }

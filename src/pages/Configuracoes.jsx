@@ -1,90 +1,72 @@
-import React, { useState, useEffect } from "react";
-import { useOutletContext, useNavigate } from "react-router-dom";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import React, { useEffect } from "react";
+import { Link, useOutletContext, useNavigate, useSearchParams } from "react-router-dom";
+import { UserRound, ShieldCheck, Palette, LayoutDashboard, ArrowRight } from "lucide-react";
 import ConfigPerfil from "@/components/config/ConfigPerfil";
 import ConfigConta from "@/components/config/ConfigConta";
 import ConfigAparencia from "@/components/config/ConfigAparencia";
-import ConfigProfissoes from "@/components/config/ConfigProfissoes";
-import ConfigPerguntas from "@/components/config/ConfigPerguntas";
-import ConfigPaleta from "@/components/config/ConfigPaleta";
-import ConfigUsuarios from "@/components/config/ConfigUsuarios";
-import ConfigFamosos from "@/components/config/ConfigFamosos";
-import ConfigFeedback from "@/components/config/ConfigFeedback";
+import { PageContainer, PageHeader } from "@/components/layout/Page";
+import { isEquipe } from "@/utils/papeis";
+
+const ABAS = [
+  { id: "perfil", label: "Meu perfil", icon: UserRound, Componente: ConfigPerfil },
+  { id: "conta", label: "Conta e segurança", icon: ShieldCheck, Componente: ConfigConta },
+  { id: "aparencia", label: "Aparência", icon: Palette, Componente: ConfigAparencia },
+];
 
 export default function Configuracoes() {
   const { user } = useOutletContext();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
-    if (!user) {
-      navigate("/login");
-    }
+    if (!user) navigate("/login");
   }, [user, navigate]);
 
   if (!user) return null;
-  
-  const isARP = user.papel === "admin";
-  const isDono = user.papel === "admin";
+
+  const aba = ABAS.find((a) => a.id === searchParams.get("aba")) || ABAS[0];
+  const { Componente } = aba;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
-      <h1 className="font-heading text-3xl font-bold text-accent mb-8">
-        Configurações
-      </h1>
+    <PageContainer size="md">
+      <PageHeader eyebrow="Sua conta" title="Configurações" />
 
-      <Tabs defaultValue="perfil">
-        <TabsList className="mb-6 flex-wrap h-auto gap-1">
-          <TabsTrigger value="perfil">Meu Perfil</TabsTrigger>
-          <TabsTrigger value="conta">Dados da Conta</TabsTrigger>
-          <TabsTrigger value="aparencia">Aparência</TabsTrigger>
-          {isARP && <TabsTrigger value="profissoes">Profissões</TabsTrigger>}
-          {isDono && <TabsTrigger value="famosos">Famosos</TabsTrigger>}
-          {isDono && <TabsTrigger value="perguntas">Perguntas</TabsTrigger>}
-          {isDono && <TabsTrigger value="paleta">Paleta Global</TabsTrigger>}
-          {isDono && <TabsTrigger value="usuarios">Usuários</TabsTrigger>}
-          {isDono && <TabsTrigger value="feedback">Feedbacks</TabsTrigger>}
-        </TabsList>
+      <div className="grid md:grid-cols-[220px_1fr] gap-6 md:gap-10 items-start">
+        <nav className="flex md:flex-col gap-1 overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 md:sticky md:top-24" aria-label="Seções">
+          {ABAS.map((a) => {
+            const ativa = a.id === aba.id;
+            return (
+              <button
+                key={a.id}
+                onClick={() => setSearchParams({ aba: a.id }, { replace: true })}
+                aria-current={ativa ? "page" : undefined}
+                className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-colors text-left ${
+                  ativa ? "bg-card text-foreground shadow-sm border border-border" : "text-muted-foreground hover:text-foreground hover:bg-muted/70 border border-transparent"
+                }`}
+              >
+                <a.icon className="w-4 h-4 shrink-0" />
+                {a.label}
+              </button>
+            );
+          })}
 
-        <TabsContent value="perfil">
-          <ConfigPerfil />
-        </TabsContent>
-        <TabsContent value="conta">
-          <ConfigConta />
-        </TabsContent>
-        <TabsContent value="aparencia">
-          <ConfigAparencia />
-        </TabsContent>
-        {isARP && (
-          <TabsContent value="profissoes">
-            <ConfigProfissoes user={user} />
-          </TabsContent>
-        )}
-        {isDono && (
-          <TabsContent value="famosos">
-            <ConfigFamosos />
-          </TabsContent>
-        )}
-        {isDono && (
-          <TabsContent value="perguntas">
-            <ConfigPerguntas />
-          </TabsContent>
-        )}
-        {isDono && (
-          <TabsContent value="paleta">
-            <ConfigPaleta />
-          </TabsContent>
-        )}
-        {isDono && (
-          <TabsContent value="usuarios">
-            <ConfigUsuarios />
-          </TabsContent>
-        )}
-        {isDono && (
-          <TabsContent value="feedback">
-            <ConfigFeedback />
-          </TabsContent>
-        )}
-      </Tabs>
-    </div>
+          {isEquipe(user) && (
+            <Link
+              to="/painel"
+              className="hidden md:flex items-center justify-between gap-2 mt-4 px-3.5 py-3 rounded-xl bg-[#0f2e26] text-[#f8f0e6] text-sm font-medium hover:bg-[#0b241d] transition-colors"
+            >
+              <span className="flex items-center gap-2.5">
+                <LayoutDashboard className="w-4 h-4" /> Painel da equipe
+              </span>
+              <ArrowRight className="w-4 h-4 opacity-70" />
+            </Link>
+          )}
+        </nav>
+
+        <section className="min-w-0">
+          <Componente />
+        </section>
+      </div>
+    </PageContainer>
   );
 }

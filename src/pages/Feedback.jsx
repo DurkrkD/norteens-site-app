@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useOutletContext, useNavigate, Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { norteens } from "@/api/norteensClient";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { MARCOS, calcularNivel, todosConcluidos } from "@/utils/progresso";
 import { ArrowLeft, Send, Lock, CheckCircle2, Circle } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { PageHeader } from "@/components/layout/Page";
+import { isEquipe } from "@/utils/papeis";
 
 const marcoLinks = {
   marco_teste: "/teste",
@@ -16,7 +18,7 @@ const marcoLinks = {
 };
 
 export default function Feedback() {
-  const { user, setUser } = useOutletContext();
+  const { user } = useOutletContext();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [texto, setTexto] = useState("");
@@ -30,7 +32,7 @@ export default function Feedback() {
 
   if (!user) return null;
 
-  const isDono = user.papel === "dono";
+  const isDono = isEquipe(user); // ARP e admin não fazem a jornada de aluno
   const completo = todosConcluidos(user);
   const nivel = calcularNivel(user);
   const desbloqueado = isDono || completo;
@@ -39,11 +41,7 @@ export default function Feedback() {
     if (!texto.trim()) return;
     setSubmitting(true);
     try {
-      await base44.entities.Feedback.create({
-        autor: user.id,
-        texto: texto.trim(),
-        autorizar_exibicao: autorizar,
-      });
+      await norteens.criarFeedback(texto.trim(), autorizar);
       setSubmitting(false);
       setSent(true);
       setTexto("");
@@ -58,10 +56,10 @@ export default function Feedback() {
   if (sent) {
     return (
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-20 text-center">
-        <div className="w-16 h-16 rounded-2xl mx-auto mb-5 flex items-center justify-center" style={{ background: "rgba(126,142,91,0.15)" }}>
-          <Send className="w-8 h-8" style={{ color: "#5E6B43" }} />
+        <div className="w-16 h-16 rounded-2xl mx-auto mb-5 flex items-center justify-center bg-secondary/15">
+          <Send className="w-8 h-8 text-secondary" />
         </div>
-        <h1 className="font-heading text-2xl font-semibold text-accent mb-2">Obrigado!</h1>
+        <h1 className="text-3xl font-semibold text-foreground mb-2">Obrigado!</h1>
         <p className="text-muted-foreground mb-8">Seu feedback foi recebido com sucesso.</p>
         <div className="flex gap-3 justify-center">
           <Button variant="outline" onClick={() => setSent(false)}>Enviar outro</Button>
@@ -74,14 +72,15 @@ export default function Feedback() {
   // Blocked state
   if (!desbloqueado) {
     return (
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
         <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
           <ArrowLeft className="w-4 h-4" /> Voltar
         </Link>
-        <h1 className="font-heading text-3xl font-bold text-accent mb-2">Seu Feedback</h1>
-        <p className="text-muted-foreground mb-8">
-          Complete sua jornada para desbloquear o formulário de feedback.
-        </p>
+        <PageHeader
+          eyebrow="Seu feedback"
+          title="Quase lá!"
+          description="Complete sua jornada para desbloquear o formulário de feedback."
+        />
 
         <div className="bg-card rounded-2xl border border-border p-6 sm:p-8 shadow-soft">
           <div className="flex items-center gap-3 mb-6">
@@ -123,14 +122,15 @@ export default function Feedback() {
 
   // Unlocked — show form
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
       <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
         <ArrowLeft className="w-4 h-4" /> Voltar
       </Link>
-      <h1 className="font-heading text-3xl font-bold text-accent mb-2">Seu Feedback</h1>
-      <p className="text-muted-foreground mb-8">
-        Escreva livremente sobre sua experiência com a Norteens. Sua opinião é muito importante para nós.
-      </p>
+      <PageHeader
+        eyebrow="Seu feedback"
+        title="Como foi sua experiência?"
+        description="Escreva livremente sobre sua jornada na Norteens. Sua opinião ajuda a melhorar a plataforma."
+      />
       <div className="bg-card rounded-2xl border border-border p-6 sm:p-8 shadow-soft">
         <Textarea
           value={texto}

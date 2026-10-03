@@ -60,6 +60,14 @@ export default function PostCard({ post, user, onUpdate }) {
     } catch { /* ignora */ }
   };
 
+  const handleDelete = async () => {
+    if (!window.confirm("Tem certeza que deseja apagar este post?")) return;
+    try {
+      await norteens.apagarPost(post.id);
+      onUpdate();
+    } catch { /* ignora */ }
+  };
+
   const isOwner = user && post.autor_id === user.id;
 
   return (
@@ -131,14 +139,6 @@ export default function PostCard({ post, user, onUpdate }) {
     </div>
   );
 }
-
-const handleDeleteComment = async (comentarioId) => {
-    try {
-      await norteens.apagarComentario(comentarioId);
-      const updated = await norteens.getComentarios(post.id);
-      setComentarios(updated);
-    } catch { /* ignora */ }
-  };
 
 function CommentItem({ comentario, user, onDelete }) {
   const autor = {

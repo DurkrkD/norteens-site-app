@@ -10,10 +10,10 @@ export default function UserAvatar({ user, size = "md" }) {
   const name = user?.nome || user?.full_name || user?.email || "?";
   const initials = name.charAt(0).toUpperCase();
 
-  if (user?.foto_perfil) {
+  if (user?.foto_url) {
     return (
       <img
-        src={user.foto_perfil}
+        src={user.foto_url}
         alt={name}
         className={`${sizeMap[size]} rounded-full object-cover shrink-0`}
       />

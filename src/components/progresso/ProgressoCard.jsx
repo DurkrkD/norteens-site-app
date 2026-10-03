@@ -34,10 +34,7 @@ export default function ProgressoCard({ user }) {
             </p>
           </div>
           {completo ? (
-            <span
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold"
-              style={{ background: "rgba(126,142,91,0.15)", color: "#5E6B43" }}
-            >
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-secondary/15 text-secondary">
               <Check className="w-3.5 h-3.5" /> Concluído
             </span>
           ) : (
@@ -48,16 +45,10 @@ export default function ProgressoCard({ user }) {
         </div>
 
         {/* Progress bar */}
-        <div
-          className="h-2.5 rounded-full overflow-hidden mb-6"
-          style={{ background: "hsl(var(--muted))" }}
-        >
+        <div className="h-2.5 rounded-full overflow-hidden mb-6 bg-muted">
           <div
-            className="h-full rounded-full transition-all duration-500"
-            style={{
-              width: `${pct}%`,
-              background: "linear-gradient(90deg, #E07A5F, #E8B04B)",
-            }}
+            className="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-accent to-highlight"
+            style={{ width: `${pct}%` }}
           />
         </div>
 
@@ -102,28 +93,16 @@ export default function ProgressoCard({ user }) {
 
         {/* Feedback unlock */}
         {completo && (
-          <div
-            className="mt-6 rounded-[14px] p-4 flex items-center justify-between gap-4 flex-wrap"
-            style={{ background: "#1C2A3A" }}
-          >
+          <div className="mt-6 rounded-[14px] p-4 flex items-center justify-between gap-4 flex-wrap bg-[#0f2e26]">
             <div>
-              <p
-                className="font-heading text-sm font-medium"
-                style={{ color: "#F7F0E6" }}
-              >
-                Feedback desbloqueado!
-              </p>
-              <p
-                className="text-xs mt-0.5"
-                style={{ color: "rgba(247,240,230,0.7)" }}
-              >
+              <p className="font-heading text-sm font-medium text-[#f8f0e6]">Feedback desbloqueado!</p>
+              <p className="text-xs mt-0.5 text-[#f8f0e6]/70">
                 Conte como foi sua experiência — pode escrever livremente.
               </p>
             </div>
             <Link
               to="/feedback"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all hover:-translate-y-px"
-              style={{ background: "#E8B04B", color: "#1C2A3A" }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all hover:-translate-y-px bg-highlight text-[#0f2e26]"
             >
               Deixar feedback
             </Link>

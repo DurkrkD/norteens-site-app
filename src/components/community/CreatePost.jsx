@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
 import { norteens } from "@/api/norteensClient";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,7 +8,7 @@ export default function CreatePost({ user, onCreated }) {
   const [texto, setTexto] = useState("");
   const [imagem, setImagem] = useState("");
   const [sending, setSending] = useState(false);
-  const [showImageInput, setShowImageInput] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const handleSubmit = async () => {
     if (!texto.trim()) return;
@@ -29,7 +28,6 @@ export default function CreatePost({ user, onCreated }) {
 
     setTexto("");
     setImagem("");
-    setShowImageInput(false);
 
    try {
       await norteens.criarPost(optimisticPost.texto, optimisticPost.imagem);
@@ -42,8 +40,13 @@ export default function CreatePost({ user, onCreated }) {
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
-    setImagem(file_url);
+    setUploading(true);
+    try {
+      const url = await norteens.uploadImagem(file);
+      setImagem(url);
+    } finally {
+      setUploading(false);
+    }
   };
   return (
     <div className="bg-card rounded-2xl border border-border p-5">
@@ -63,8 +66,8 @@ export default function CreatePost({ user, onCreated }) {
       <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
         <div>
           <label className="cursor-pointer p-2 rounded-lg hover:bg-muted transition-colors inline-flex items-center gap-1 text-sm text-muted-foreground">
-            <ImagePlus className="w-4 h-4" /> Imagem
-            <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+            <ImagePlus className="w-4 h-4" /> {uploading ? "Enviando..." : "Imagem"}
+            <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" disabled={uploading} />
           </label>
         </div>
         <Button onClick={handleSubmit} disabled={sending || !texto.trim()} size="sm" className="bg-primary hover:bg-primary/90">

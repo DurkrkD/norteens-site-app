@@ -1,4 +1,3 @@
-import { base44 } from "@/api/base44Client";
 import { norteens } from "@/api/norteensClient";
 
 export const MARCOS = [

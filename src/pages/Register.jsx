@@ -43,8 +43,7 @@ export default function Register() {
           Já tem uma conta?{" "}
           <Link
             to="/login"
-            className="font-medium hover:underline"
-            style={{ color: "var(--orange-dark)" }}
+            className="font-semibold text-accent hover:underline"
           >
             Entrar
           </Link>
@@ -141,8 +140,7 @@ export default function Register() {
 
         <Button
           type="submit"
-          className="w-full h-12 font-medium rounded-full text-white"
-          style={{ backgroundColor: "var(--green-dark)" }}
+          className="w-full h-12 text-[15px]"
           disabled={loading}
         >
           {loading ? (

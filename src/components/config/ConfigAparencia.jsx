@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
 import { norteens } from "@/api/norteensClient";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
