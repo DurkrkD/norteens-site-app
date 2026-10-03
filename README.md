@@ -19,8 +19,8 @@ O endereço da API vem da variável `VITE_API_URL` (o Render preenche sozinho); 
 ## Rodando localmente (passo a passo manual)
 
 1. **Ligue o banco**: dê dois cliques em `C:\dev\postgres\iniciar-banco.cmd`.
-   Ele abre o PostgreSQL numa janela minimizada ("PostgreSQL Norteens") — deixe-a aberta
-   enquanto usar o app. Para desligar, `C:\dev\postgres\parar-banco.cmd`.
+   Ele liga o PostgreSQL escondido, sem janela (não há o que fechar sem querer), e pode ser
+   rodado a qualquer hora: se já estiver ligado, só avisa. Para desligar, `C:\dev\postgres\parar-banco.cmd`.
    (O banco não liga sozinho com o Windows: rode o `iniciar-banco.cmd` depois de reiniciar o PC.)
 2. Instale as dependências do frontend: `npm install`.
 3. Suba o backend (em outro terminal, dentro da pasta `server`):
