@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Home, Briefcase, MessageCircle } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -12,7 +12,6 @@ const tabs = [
 export default function MobileBottomTabs() {
   const isMobile = useIsMobile();
   const location = useLocation();
-  const navigate = useNavigate();
 
   const handleTabClick = useCallback(
     (e, path) => {
@@ -33,7 +32,7 @@ export default function MobileBottomTabs() {
     >
       <div className="flex items-center justify-around h-16 select-none">
         {tabs.map((tab) => {
-          const active = location.pathname === tab.to;
+          const active = tab.to === "/" ? location.pathname === "/" : location.pathname.startsWith(tab.to);
           return (
             <Link
               key={tab.to}

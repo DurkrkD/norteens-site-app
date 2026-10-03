@@ -7,7 +7,7 @@ const steps = [
     icon: Heart,
     title: "Se conheça",
     desc: "Responda o teste comportamental e entenda seu perfil, suas forças e o que te move de verdade.",
-    bg: "bg-secondary/16",
+    bg: "bg-secondary/15",
     fg: "text-secondary",
   },
   {
@@ -15,7 +15,7 @@ const steps = [
     icon: Search,
     title: "Explore possibilidades",
     desc: "Descubra profissões que combinam com você, com dados reais de rotina, mercado e salário.",
-    bg: "bg-primary/14",
+    bg: "bg-primary/15",
     fg: "text-primary",
   },
   {
@@ -23,7 +23,7 @@ const steps = [
     icon: Target,
     title: "Tome decisões",
     desc: "Monte seu plano, aproveite oportunidades e conte com mentoria para seguir com clareza.",
-    bg: "bg-highlight/18",
+    bg: "bg-highlight/20",
     fg: "text-highlight",
   },
 ];

@@ -3,6 +3,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClientInstance } from "@/lib/query-client";
 import {
   BrowserRouter as Router,
+  Navigate,
   Route,
   Routes,
   useLocation,
@@ -30,7 +31,7 @@ import Resultado from "@/pages/Resultado";
 import Comunidade from "@/pages/Comunidade";
 import Configuracoes from "@/pages/Configuracoes";
 import Feedback from "@/pages/Feedback";
-import FeedbacksRecebidos from "@/pages/FeedbacksRecebidos";
+import Painel from "@/pages/Painel";
 
 const pageVariants = {
   initial: { opacity: 0, x: 20 },
@@ -69,7 +70,10 @@ const AnimatedRoutes = () => {
             <Route path="/resultado" element={<Resultado />} />
             <Route path="/configuracoes" element={<Configuracoes />} />
             <Route path="/feedback" element={<Feedback />} />
-            <Route path="/feedbacks-recebidos" element={<FeedbacksRecebidos />} />
+            <Route path="/painel" element={<Painel />} />
+            <Route path="/painel/:secao" element={<Painel />} />
+            {/* endereço antigo da lista de feedbacks */}
+            <Route path="/feedbacks-recebidos" element={<Navigate to="/painel/feedbacks" replace />} />
           </Route>
 
           <Route path="*" element={<PageNotFound />} />

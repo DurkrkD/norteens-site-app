@@ -1,9 +1,9 @@
 import React from "react";
 
 // Mascote: garota com cabelo terracota
-export function MascotGirl({ className = "" }) {
+export function MascotGirl({ className = "", ...size }) {
   return (
-    <svg viewBox="0 0 140 178" className={className} aria-hidden="true">
+    <svg viewBox="0 0 140 178" className={className} aria-hidden="true" {...size}>
       <rect x="37" y="42" width="66" height="90" rx="33" fill="#C9654B" />
       <path d="M40 122 Q40 106 70 106 Q100 106 100 122 L104 176 Q104 178 100 178 L40 178 Q36 178 36 176 Z" fill="#7E8E5B" />
       <path d="M96 122 q20 -3 24 -26" stroke="#7E8E5B" strokeWidth="13" fill="none" strokeLinecap="round" />
@@ -20,9 +20,9 @@ export function MascotGirl({ className = "" }) {
 }
 
 // Mascote: garoto com boné verde
-export function MascotCap({ className = "" }) {
+export function MascotCap({ className = "", ...size }) {
   return (
-    <svg viewBox="0 0 140 178" className={className} aria-hidden="true">
+    <svg viewBox="0 0 140 178" className={className} aria-hidden="true" {...size}>
       <path d="M40 122 Q40 106 70 106 Q100 106 100 122 L104 176 Q104 178 100 178 L40 178 Q36 178 36 176 Z" fill="#E07A5F" />
       <path d="M97 126 q17 3 20 -13" stroke="#E07A5F" strokeWidth="13" fill="none" strokeLinecap="round" />
       <circle cx="118" cy="110" r="9" fill="#D99B6C" />
@@ -45,7 +45,7 @@ export default function HeroMascots({ className = "" }) {
   return (
     <svg viewBox="0 0 480 440" className={className} aria-hidden="true">
       {/* bg circles */}
-      <circle cx="384" cy="118" r="116" fill="#7E8E5B" opacity=".16" />
+      <circle cx="360" cy="130" r="112" fill="#7E8E5B" opacity=".16" />
       <circle cx="104" cy="316" r="96" fill="#E07A5F" opacity=".13" />
       <ellipse cx="240" cy="402" rx="166" ry="20" fill="#1C2A3A" opacity=".06" />
       {/* dashed path */}
@@ -58,13 +58,12 @@ export default function HeroMascots({ className = "" }) {
         strokeDasharray="1.5 13"
         strokeLinecap="round"
       />
-      {/* characters */}
-      <MascotCap className="absolute" />
-      <g transform="translate(230 188)">
-        <MascotCap className="" />
+      {/* personagens: SVG dentro de SVG precisa de width/height, senão estica até ocupar tudo */}
+      <g transform="translate(248 162) scale(1.3)">
+        <MascotCap width="140" height="178" />
       </g>
-      <g transform="translate(86 174)">
-        <MascotGirl />
+      <g transform="translate(96 150) scale(1.3)">
+        <MascotGirl width="140" height="178" />
       </g>
       {/* compass icon */}
       <g transform="translate(332 66)">

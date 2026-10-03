@@ -9,7 +9,6 @@ export default function CreatePost({ user, onCreated }) {
   const [imagem, setImagem] = useState("");
   const [sending, setSending] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [showImageInput, setShowImageInput] = useState(false);
 
   const handleSubmit = async () => {
     if (!texto.trim()) return;
@@ -29,7 +28,6 @@ export default function CreatePost({ user, onCreated }) {
 
     setTexto("");
     setImagem("");
-    setShowImageInput(false);
 
    try {
       await norteens.criarPost(optimisticPost.texto, optimisticPost.imagem);

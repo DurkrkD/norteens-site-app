@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/components/ui/use-toast";
 import { ChevronLeft, ChevronRight, Send } from "lucide-react";
+import { PageHeader } from "@/components/layout/Page";
 
 const respostasIniciais = () => {
   /** @type {Record<number, number>} */
@@ -59,31 +60,37 @@ export default function Teste() {
   const progress = ((current + 1) / PERGUNTAS_TESTE.length) * 100;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
-      <h1 className="font-heading text-3xl font-bold text-accent mb-2">Teste Comportamental</h1>
-      <p className="text-muted-foreground mb-8">Responda com sinceridade — não existem respostas certas ou erradas.</p>
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+      <PageHeader
+        eyebrow="Teste comportamental"
+        title="Como você costuma agir?"
+        description="Arraste para o lado que mais combina com você. Não existem respostas certas ou erradas."
+      />
 
       {/* Progress */}
       <div className="mb-8">
-        <div className="flex justify-between text-sm text-muted-foreground mb-2">
+        <div className="flex justify-between text-sm font-medium text-muted-foreground mb-2">
           <span>Pergunta {current + 1} de {PERGUNTAS_TESTE.length}</span>
           <span>{Math.round(progress)}%</span>
         </div>
         <div className="h-2 bg-muted rounded-full overflow-hidden">
-          <div className="h-full bg-primary rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-accent to-highlight transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
         </div>
       </div>
 
       {/* Question */}
-      <div className="bg-card rounded-2xl border border-border p-8 mb-8">
-        <h2 className="font-heading text-xl font-semibold text-foreground text-center mb-8">
+      <div className="bg-card rounded-2xl border border-border shadow-soft p-6 sm:p-10 mb-8">
+        <h2 className="text-xl sm:text-2xl font-semibold text-foreground text-center mb-8 leading-snug">
           {pergunta.enunciado}
         </h2>
 
         <div className="space-y-6">
-          <div className="flex justify-between text-sm font-medium">
-            <span className="text-secondary max-w-[40%]">{pergunta.lado_esquerdo}</span>
-            <span className="text-primary max-w-[40%] text-right">{pergunta.lado_direito}</span>
+          <div className="grid grid-cols-2 gap-3 text-sm font-medium">
+            <span className="p-3 rounded-xl bg-muted/70 text-foreground">{pergunta.lado_esquerdo}</span>
+            <span className="p-3 rounded-xl bg-muted/70 text-foreground text-right">{pergunta.lado_direito}</span>
           </div>
           <Slider
             value={[respostas[pergunta.id]]}

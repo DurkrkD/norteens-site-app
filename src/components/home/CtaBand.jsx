@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 
 export default function CtaBand({ user }) {
-  const to = user ? (user.teste_feito ? "/resultado" : "/teste") : "/login";
+  const to = user ? (user.teste_feito ? "/resultado" : "/teste") : "/register";
+  const label = user?.teste_feito ? "Ver meu resultado" : "Fazer teste gratuito";
 
   return (
     <section className="pb-16 sm:pb-20">
@@ -22,10 +23,9 @@ export default function CtaBand({ user }) {
           </div>
           <Link
             to={to}
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-full font-semibold text-[15px] shadow-soft transition-all hover:-translate-y-px"
-            style={{ background: "#1C2A3A", color: "#F7F0E6" }}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-[15px] shadow-soft transition-all hover:-translate-y-px bg-[#0f2e26] text-[#f8f0e6] hover:bg-[#0b241d]"
           >
-            Fazer teste gratuito
+            {label}
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>

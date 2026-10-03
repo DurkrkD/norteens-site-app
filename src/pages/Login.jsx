@@ -37,8 +37,7 @@ export default function Login() {
           Ainda não tem conta?{" "}
           <Link
             to="/register"
-            className="font-medium hover:underline"
-            style={{ color: "var(--orange-dark)" }}
+            className="font-semibold text-accent hover:underline"
           >
             Criar agora
           </Link>
@@ -74,7 +73,12 @@ export default function Login() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="password">Senha</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password">Senha</Label>
+            <Link to="/forgot-password" className="text-xs font-medium text-muted-foreground hover:text-accent transition-colors">
+              Esqueci minha senha
+            </Link>
+          </div>
           <div className="relative">
             <Lock
               className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground"
@@ -95,8 +99,7 @@ export default function Login() {
 
         <Button
           type="submit"
-          className="w-full h-12 font-medium rounded-full text-white"
-          style={{ backgroundColor: "var(--green-dark)" }}
+          className="w-full h-12 text-[15px]"
           disabled={loading}
         >
           {loading ? (

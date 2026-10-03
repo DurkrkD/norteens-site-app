@@ -8,7 +8,7 @@ export default function HeroSection({ user }) {
     ? user.teste_feito
       ? { to: "/resultado", label: "Ver meu resultado" }
       : { to: "/teste", label: "Fazer teste" }
-    : { to: "/login", label: "Fazer teste" };
+    : { to: "/register", label: "Fazer teste" };
 
   return (
     <section className="relative overflow-hidden">

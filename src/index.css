@@ -1,28 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@300;400;500;600;700&display=swap');
+/* fontes (Poppins nos títulos, Inter no texto) são carregadas no index.html */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-:root{
-  --bg:#f8f0e6;
-  --bg-alt:#efe3d3;
-  --white:#ffffff;
-  --navy:#173226;
-  --green:#1c4a37;
-  --green-dark:#0f2e26;
-  --green-darker:#0b241d;
-  --orange:#e57a57;
-  --orange-dark:#d86a4a;
-  --yellow:#f1b546;
-  --terracotta:#d1603f;
-  --text:#173226;
-  --text-light:#6d7c74;
-  --border:#e8ddc9;
-  --radius:24px;
-  --radius-sm:16px;
-  --shadow:0 15px 40px rgba(18,60,84,.08);
-  --shadow-lg:0 25px 60px rgba(15,46,38,.14);
-}
 :root {
     --background: 33 56% 94%;
     --foreground: 153 37% 14%;
@@ -50,7 +29,7 @@
     --chart-3: 165 51% 12%;
     --chart-4: 39 86% 61%;
     --chart-5: 14 61% 53%;
-    --radius: 1.5rem;
+    --radius: 1rem;
     --font-heading: 'Poppins', ui-sans-serif, system-ui, sans-serif;
     --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
     --font-display: 'Poppins', ui-sans-serif, system-ui, sans-serif;
@@ -107,8 +86,16 @@
     @apply border-border outline-ring/50;
   }
 
+  h1, h2, h3, h4 {
+    @apply font-heading tracking-tight;
+  }
+
+  ::selection {
+    @apply bg-accent/25;
+  }
+
   body {
-    @apply bg-background text-foreground font-body;
+    @apply bg-background text-foreground font-body antialiased;
     overscroll-behavior: none;
     -webkit-tap-highlight-color: transparent;
     padding-top: env(safe-area-inset-top);
