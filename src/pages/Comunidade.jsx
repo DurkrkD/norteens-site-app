@@ -96,7 +96,7 @@ export default function Comunidade() {
           </div>
         </div>
 
-        <aside className="hidden lg:block space-y-5 sticky top-24">
+        <aside className="hidden lg:block space-y-5 sticky top-8">
           <div className="rounded-2xl bg-card border border-border p-6">
             <h2 className="font-heading font-bold text-foreground">Combinados da comunidade</h2>
             <ul className="mt-5 space-y-4">

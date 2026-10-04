@@ -83,7 +83,7 @@ export default function Hero({ user }) {
     ? user.teste_feito
       ? { to: "/resultado", label: "Ver meu resultado" }
       : { to: "/teste", label: "Fazer o teste" }
-    : { to: "/register", label: "Fazer o teste grátis" };
+    : { to: "/register", label: "Fazer o teste" };
 
   return (
     <section className="relative overflow-hidden">
@@ -92,7 +92,7 @@ export default function Hero({ user }) {
         <div className="grid lg:grid-cols-[1.05fr_1fr] gap-14 lg:gap-12 items-center">
           <div className="text-center lg:text-left">
             <span className="inline-flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full bg-card border border-border shadow-soft text-xs font-medium text-muted-foreground">
-              <span className="px-2 py-0.5 rounded-full bg-accent/15 text-accent font-semibold">Grátis</span>
+              <span className="px-2 py-0.5 rounded-full bg-accent/15 text-accent font-semibold">Novo</span>
               Teste comportamental · 12 perguntas · 3 min
             </span>
 
@@ -124,7 +124,7 @@ export default function Hero({ user }) {
             </div>
 
             <ul className="mt-8 flex flex-wrap justify-center lg:justify-start gap-x-6 gap-y-2 text-sm text-muted-foreground">
-              {["100% gratuito", "Resultado na hora", "Mesmas respostas, mesmo resultado"].map((t) => (
+              {["Resultado na hora", "Mesmas respostas, mesmo resultado", "Profissões com rotina e salário"].map((t) => (
                 <li key={t} className="inline-flex items-center gap-1.5">
                   <Check className="w-4 h-4 text-secondary" strokeWidth={2.5} /> {t}
                 </li>

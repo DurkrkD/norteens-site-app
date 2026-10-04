@@ -6,9 +6,7 @@ import {
   Navigate,
   Route,
   Routes,
-  useLocation,
 } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
 import { ThemeProvider } from "next-themes";
 import PageNotFound from "./lib/PageNotFound";
 import { AuthProvider, useAuth } from "@/lib/AuthContext";
@@ -33,53 +31,35 @@ import Configuracoes from "@/pages/Configuracoes";
 import Feedback from "@/pages/Feedback";
 import Painel from "@/pages/Painel";
 
-const pageVariants = {
-  initial: { opacity: 0, x: 20 },
-  animate: { opacity: 1, x: 0 },
-  exit: { opacity: 0, x: -20 },
-};
-
-const pageTransition = { duration: 0.2, ease: "easeOut" };
-
-const AnimatedRoutes = () => {
-  const location = useLocation();
+// A animação de troca de página fica dentro do AppLayout (só no conteúdo): se envolvesse o layout
+// inteiro, a barra lateral fixa piscaria e recarregaria o usuário a cada clique.
+const AppRoutes = () => {
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={location.pathname}
-        variants={pageVariants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        transition={pageTransition}
-      >
-        <Routes location={location}>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
-          {/* Public + authenticated routes share the layout */}
-          <Route element={<AppLayout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/profissoes" element={<Profissoes />} />
-            <Route path="/profissoes/:id" element={<ProfissaoDetalhe />} />
-            <Route path="/famosos" element={<Famosos />} />
-            <Route path="/comunidade" element={<Comunidade />} />
-            <Route path="/teste" element={<Teste />} />
-            <Route path="/resultado" element={<Resultado />} />
-            <Route path="/configuracoes" element={<Configuracoes />} />
-            <Route path="/feedback" element={<Feedback />} />
-            <Route path="/painel" element={<Painel />} />
-            <Route path="/painel/:secao" element={<Painel />} />
-            {/* endereço antigo da lista de feedbacks */}
-            <Route path="/feedbacks-recebidos" element={<Navigate to="/painel/feedbacks" replace />} />
-          </Route>
+      {/* Public + authenticated routes share the layout */}
+      <Route element={<AppLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/profissoes" element={<Profissoes />} />
+        <Route path="/profissoes/:id" element={<ProfissaoDetalhe />} />
+        <Route path="/famosos" element={<Famosos />} />
+        <Route path="/comunidade" element={<Comunidade />} />
+        <Route path="/teste" element={<Teste />} />
+        <Route path="/resultado" element={<Resultado />} />
+        <Route path="/configuracoes" element={<Configuracoes />} />
+        <Route path="/feedback" element={<Feedback />} />
+        <Route path="/painel" element={<Painel />} />
+        <Route path="/painel/:secao" element={<Painel />} />
+        {/* endereço antigo da lista de feedbacks */}
+        <Route path="/feedbacks-recebidos" element={<Navigate to="/painel/feedbacks" replace />} />
+      </Route>
 
-          <Route path="*" element={<PageNotFound />} />
-        </Routes>
-      </motion.div>
-    </AnimatePresence>
+      <Route path="*" element={<PageNotFound />} />
+    </Routes>
   );
 };
 
@@ -94,7 +74,7 @@ const AuthenticatedApp = () => {
     );
   }
 
-  return <AnimatedRoutes />;
+  return <AppRoutes />;
 };
 
 function App() {

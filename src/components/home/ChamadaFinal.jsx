@@ -8,7 +8,7 @@ export default function ChamadaFinal({ user }) {
     ? user.teste_feito
       ? { to: "/profissoes", label: "Explorar profissões" }
       : { to: "/teste", label: "Fazer o teste agora" }
-    : { to: "/register", label: "Começar grátis" };
+    : { to: "/register", label: "Criar minha conta" };
 
   return (
     <section className="pb-24 sm:pb-28">

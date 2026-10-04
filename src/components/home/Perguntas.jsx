@@ -4,8 +4,8 @@ import { CabecalhoSecao } from "@/components/home/Secao";
 
 const FAQ = [
   {
-    p: "O teste é gratuito?",
-    r: "Sim. O teste, o resultado, o guia de profissões e a comunidade são 100% gratuitos.",
+    p: "Quanto custa?",
+    r: "Hoje, criar a conta e fazer o teste de perfil não tem custo. Em breve a Norteens vai oferecer recursos complementares, como a avaliação DISC completa, com uma análise mais aprofundada. Os detalhes serão anunciados aqui.",
   },
   {
     p: "Quanto tempo leva?",
@@ -13,7 +13,7 @@ const FAQ = [
   },
   {
     p: "Em que o teste se baseia?",
-    r: "Ele é inspirado no modelo DISC, que descreve quatro estilos de comportamento: iniciativa, influência, estabilidade e precisão. O resultado é um ponto de partida para o autoconhecimento, não um diagnóstico psicológico nem uma sentença sobre o seu futuro.",
+    r: "É uma versão resumida inspirada no modelo DISC, que descreve quatro estilos de comportamento: iniciativa, influência, estabilidade e precisão. O resultado é um ponto de partida para o autoconhecimento, não um diagnóstico psicológico nem uma sentença sobre o seu futuro.",
   },
   {
     p: "Posso refazer o teste e ter outro resultado?",

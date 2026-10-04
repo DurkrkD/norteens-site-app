@@ -187,7 +187,7 @@ export default function Resultado() {
           </p>
         </div>
 
-        <aside className="space-y-5 lg:sticky lg:top-24">
+        <aside className="space-y-5 lg:sticky lg:top-8">
           {escolhida ? (
             <Link to={`/profissoes/${escolhida.id}`} className="group block p-6 rounded-2xl bg-secondary/10 border border-secondary/20">
               <CheckCircle2 className="w-6 h-6 text-secondary" />

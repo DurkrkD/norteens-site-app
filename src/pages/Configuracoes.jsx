@@ -32,7 +32,7 @@ export default function Configuracoes() {
       <PageHeader eyebrow="Sua conta" title="Configurações" />
 
       <div className="grid md:grid-cols-[220px_1fr] gap-6 md:gap-10 items-start">
-        <nav className="flex md:flex-col gap-1 overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 md:sticky md:top-24" aria-label="Seções">
+        <nav className="flex md:flex-col gap-1 overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 md:sticky md:top-8" aria-label="Seções">
           {ABAS.map((a) => {
             const ativa = a.id === aba.id;
             return (

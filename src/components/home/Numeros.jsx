@@ -6,7 +6,7 @@ export default function Numeros({ profissoes, famosos }) {
     profissoes > 0 && { valor: profissoes, label: profissoes === 1 ? "profissão detalhada" : "profissões detalhadas" },
     famosos > 0 && { valor: famosos, label: famosos === 1 ? "referência inspiradora" : "referências inspiradoras" },
     { valor: 4, label: "perfis comportamentais" },
-    { valor: "R$ 0", label: "para sempre" },
+    { valor: "3 min", label: "para descobrir seu perfil" },
   ].filter(Boolean);
 
   return (

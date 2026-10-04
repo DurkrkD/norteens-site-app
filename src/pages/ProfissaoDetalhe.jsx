@@ -184,7 +184,7 @@ export default function ProfissaoDetalhe() {
           )}
         </article>
 
-        <aside className="space-y-5 lg:sticky lg:top-24">
+        <aside className="space-y-5 lg:sticky lg:top-8">
           {user && escolhida && (
             <div className="p-6 rounded-2xl bg-secondary/10 border border-secondary/20">
               <CheckCircle2 className="w-6 h-6 text-secondary mb-3" />
@@ -207,13 +207,13 @@ export default function ProfissaoDetalhe() {
             <div className="p-6 rounded-2xl bg-[#0f2e26] text-[#f8f0e6]">
               <p className="font-heading text-lg font-bold">Combina com você?</p>
               <p className="text-sm text-[#f8f0e6]/70 mt-1.5 mb-5">
-                Faça o teste grátis e descubra seu perfil em 3 minutos.
+                Faça o teste e descubra seu perfil em 3 minutos.
               </p>
               <Link
                 to="/register"
                 className="group flex items-center justify-center gap-2 h-12 rounded-full bg-[#f8f0e6] text-[#0f2e26] font-semibold hover:bg-white transition-colors"
               >
-                Começar grátis <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                Começar agora <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
             </div>
           )}

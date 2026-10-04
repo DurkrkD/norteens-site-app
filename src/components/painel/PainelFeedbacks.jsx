@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { MessageSquareHeart, Lock, Star } from "lucide-react";
+import { MessageSquareHeart, Lock, Star, Trash2 } from "lucide-react";
 import { norteens } from "@/api/norteensClient";
 import { useToast } from "@/components/ui/use-toast";
 import { PageLoading, EmptyState } from "@/components/layout/Page";
-import { SecaoHeader } from "@/components/painel/ui";
+import { SecaoHeader, BotaoIcone } from "@/components/painel/ui";
+import { isAdmin } from "@/utils/papeis";
 
 const FILTROS = [
   { id: "todos", label: "Todos", testa: () => true },
@@ -12,8 +13,9 @@ const FILTROS = [
   { id: "privados", label: "Privados", testa: (f) => !f.autorizar_exibicao },
 ];
 
-export default function PainelFeedbacks() {
+export default function PainelFeedbacks({ user }) {
   const { toast } = useToast();
+  const admin = isAdmin(user); // só o admin apaga (o backend também confere)
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState("");
@@ -32,6 +34,17 @@ export default function PainelFeedbacks() {
       const { destaque } = await norteens.destacarFeedback(f.id, !f.destaque);
       setFeedbacks((lista) => lista.map((x) => (x.id === f.id ? { ...x, destaque } : x)));
       toast({ title: destaque ? "Feedback destacado na página inicial." : "Feedback retirado da página inicial." });
+    } catch (e) {
+      toast({ title: e.message, variant: "destructive" });
+    }
+  };
+
+  const apagar = async (f) => {
+    if (!window.confirm(`Apagar o feedback de ${f.autor_nome || "este aluno"}?\n\nEsta ação não pode ser desfeita.`)) return;
+    try {
+      await norteens.apagarFeedback(f.id);
+      setFeedbacks((lista) => lista.filter((x) => x.id !== f.id));
+      toast({ title: "Feedback apagado." });
     } catch (e) {
       toast({ title: e.message, variant: "destructive" });
     }
@@ -95,27 +108,34 @@ export default function PainelFeedbacks() {
                         {f.autor_email} · {new Date(f.criado_em).toLocaleDateString("pt-BR")}
                       </p>
                     </div>
-                    {f.autorizar_exibicao ? (
-                      <button
-                        onClick={() => alternarDestaque(f)}
-                        aria-pressed={f.destaque}
-                        className={`inline-flex items-center gap-1.5 shrink-0 h-8 px-3 rounded-full text-xs font-semibold border transition-colors ${
-                          f.destaque
-                            ? "bg-highlight/25 border-highlight/50 text-[#8a5a12] hover:bg-highlight/35"
-                            : "bg-card border-border text-muted-foreground hover:text-foreground hover:bg-muted"
-                        }`}
-                      >
-                        <Star className={`w-3.5 h-3.5 ${f.destaque ? "fill-current" : ""}`} />
-                        {f.destaque ? "Na página inicial" : "Destacar"}
-                      </button>
-                    ) : (
-                      <span
-                        title="O aluno não autorizou exibir este feedback"
-                        className="inline-flex items-center gap-1 shrink-0 text-xs font-medium px-2.5 py-1 rounded-full bg-muted text-muted-foreground"
-                      >
-                        <Lock className="w-3 h-3" /> Privado
-                      </span>
-                    )}
+                    <div className="flex items-center gap-1 shrink-0">
+                      {f.autorizar_exibicao ? (
+                        <button
+                          onClick={() => alternarDestaque(f)}
+                          aria-pressed={f.destaque}
+                          className={`inline-flex items-center gap-1.5 shrink-0 h-8 px-3 rounded-full text-xs font-semibold border transition-colors ${
+                            f.destaque
+                              ? "bg-highlight/25 border-highlight/50 text-[#8a5a12] hover:bg-highlight/35"
+                              : "bg-card border-border text-muted-foreground hover:text-foreground hover:bg-muted"
+                          }`}
+                        >
+                          <Star className={`w-3.5 h-3.5 ${f.destaque ? "fill-current" : ""}`} />
+                          {f.destaque ? "Na página inicial" : "Destacar"}
+                        </button>
+                      ) : (
+                        <span
+                          title="O aluno não autorizou exibir este feedback"
+                          className="inline-flex items-center gap-1 shrink-0 text-xs font-medium px-2.5 py-1 rounded-full bg-muted text-muted-foreground"
+                        >
+                          <Lock className="w-3 h-3" /> Privado
+                        </span>
+                      )}
+                      {admin && (
+                        <BotaoIcone label="Apagar feedback" perigo onClick={() => apagar(f)}>
+                          <Trash2 className="w-4 h-4" />
+                        </BotaoIcone>
+                      )}
+                    </div>
                   </div>
                 </article>
               ))}

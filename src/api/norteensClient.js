@@ -419,6 +419,18 @@ export const norteens = {
     return r;
   },
 
+  // [ADMIN] apaga um feedback
+  async apagarFeedback(id) {
+    const token = localStorage.getItem('token');
+    const resposta = await fetch(`${API_URL}/feedbacks/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const r = await resposta.json();
+    if (!resposta.ok) throw new Error(r.erro || 'Erro ao apagar feedback');
+    return r;
+  },
+
   // [ADMIN] lista todos os usuários
   async listarUsuarios() {
     const token = localStorage.getItem('token');

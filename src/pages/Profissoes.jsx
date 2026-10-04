@@ -147,7 +147,7 @@ export default function Profissoes() {
                 <span className="flex-1 min-w-0">
                   <span className="block font-semibold">Não sabe por onde começar?</span>
                   <span className="block text-sm text-[#f8f0e6]/70">
-                    Faça o teste comportamental grátis e veja quais carreiras combinam com seu perfil.
+                    Faça o teste comportamental e veja quais carreiras combinam com seu perfil.
                   </span>
                 </span>
                 <ArrowRight className="w-5 h-5 shrink-0 transition-transform group-hover:translate-x-0.5" />

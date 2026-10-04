@@ -4,6 +4,7 @@ import { ptBR } from "date-fns/locale";
 import { Heart, MessageCircle, Trash2, SendHorizontal } from "lucide-react";
 import { norteens } from "@/api/norteensClient";
 import UserAvatar from "@/components/UserAvatar";
+import { isAdmin } from "@/utils/papeis";
 
 const haQuanto = (data) => formatDistanceToNow(new Date(data), { addSuffix: true, locale: ptBR });
 
@@ -66,15 +67,21 @@ export default function PostCard({ post, user, onUpdate }) {
     } catch { /* ignora */ }
   };
 
+  const isOwner = user && post.autor_id === user.id;
+  // o admin modera: apaga posts e comentários de qualquer pessoa
+  const admin = isAdmin(user);
+  const podeApagar = isOwner || admin;
+
   const handleDelete = async () => {
-    if (!window.confirm("Tem certeza que deseja apagar este post?")) return;
+    const pergunta = isOwner
+      ? "Tem certeza que deseja apagar este post?"
+      : `Apagar o post de ${autor.nome || autor.apelido || "este usuário"}? Esta ação não pode ser desfeita.`;
+    if (!window.confirm(pergunta)) return;
     try {
       await norteens.apagarPost(post.id);
       onUpdate();
     } catch { /* ignora */ }
   };
-
-  const isOwner = user && post.autor_id === user.id;
   const acao = "inline-flex items-center gap-1.5 h-9 px-3 rounded-full text-sm font-medium transition-colors";
 
   return (
@@ -86,11 +93,11 @@ export default function PostCard({ post, user, onUpdate }) {
             <p className="font-semibold text-foreground text-[15px] leading-tight">{autor.nome || autor.apelido || "Usuário"}</p>
             <time dateTime={post.criado_em} className="text-xs text-muted-foreground">{haQuanto(post.criado_em)}</time>
           </div>
-          {isOwner && (
+          {podeApagar && (
             <button
               onClick={handleDelete}
               aria-label="Apagar post"
-              title="Apagar post"
+              title={isOwner ? "Apagar post" : "Apagar post (moderação)"}
               className="p-2 -mr-2 -mt-1 rounded-full text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
             >
               <Trash2 className="w-4 h-4" />
@@ -166,6 +173,7 @@ export default function PostCard({ post, user, onUpdate }) {
 function CommentItem({ comentario, user, onDelete }) {
   const autor = { nome: comentario.autor_nome, apelido: comentario.autor_apelido, foto_url: comentario.autor_foto };
   const isOwner = user && comentario.autor_id === user.id;
+  const podeApagar = isOwner || isAdmin(user);
 
   return (
     <div className="group flex gap-2.5 items-start">
@@ -177,7 +185,7 @@ function CommentItem({ comentario, user, onDelete }) {
         </div>
         <p className="text-sm text-foreground/85 mt-0.5 break-words">{comentario.texto}</p>
       </div>
-      {isOwner && (
+      {podeApagar && (
         <button
           onClick={() => onDelete(comentario.id)}
           aria-label="Apagar comentário"

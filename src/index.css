@@ -134,3 +134,9 @@
     text-wrap: pretty;
   }
 }
+
+/* barra de tempo das notificações */
+@keyframes toast-tempo {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}

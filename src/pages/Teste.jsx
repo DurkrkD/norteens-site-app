@@ -71,6 +71,8 @@ export default function Teste() {
   useEffect(() => {
     if (etapa !== "perguntas") return;
     const tecla = (e) => {
+      // digitando na busca (ou com Ctrl/⌘) não é resposta
+      if (e.ctrlKey || e.metaKey || e.altKey || e.target.closest?.("input, textarea, [contenteditable=true], [role=dialog]")) return;
       if (e.key >= "1" && e.key <= "7") responder(Number(e.key) - 1);
       if (e.key === "ArrowLeft" && atual > 0) setAtual(atual - 1);
     };
@@ -186,9 +188,9 @@ export default function Teste() {
   const progresso = (respondidas / TOTAL) * 100;
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex flex-col">
+    <div className="min-h-[calc(100vh-4rem)] md:min-h-screen flex flex-col">
       {/* progresso */}
-      <div className="border-b border-border bg-background/80 backdrop-blur sticky top-16 z-10">
+      <div className="border-b border-border bg-background/80 backdrop-blur sticky top-16 md:top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-4">
           <button
             onClick={() => (atual > 0 ? setAtual(atual - 1) : setEtapa("intro"))}

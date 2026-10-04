@@ -77,7 +77,7 @@ export default function Painel() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 lg:py-10 lg:grid lg:grid-cols-[240px_1fr] lg:gap-10">
-      <aside className="lg:sticky lg:top-24 lg:self-start mb-6 lg:mb-0">
+      <aside className="lg:sticky lg:top-8 lg:self-start mb-6 lg:mb-0">
         {/* identificação */}
         <div className="hidden lg:block p-4 rounded-2xl bg-[#0f2e26] text-[#f8f0e6] mb-5">
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#f8f0e6]/55">Painel da equipe</p>
