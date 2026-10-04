@@ -8,6 +8,12 @@ function enderecoCompleto(valor) {
 }
 const API_URL = enderecoCompleto(import.meta.env.VITE_API_URL || 'http://localhost:3000');
 
+// No plano gratuito do Render a API "dorme" sem uso e leva ~1 min para acordar. Chamar isto
+// assim que o site abre faz ela ir acordando enquanto a pessoa ainda lê a página ou digita a senha.
+export function acordarServidor() {
+  fetch(`${API_URL}/`, { cache: 'no-store' }).catch(() => { /* só um aviso para acordar; erro não importa */ });
+}
+
 export const norteens = {
   // faz login e guarda o token (crachá) no navegador
   async login(email, senha) {

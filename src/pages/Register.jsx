@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UserPlus, User, Mail, Lock, Loader2 } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
+import AvisoDemora from "@/components/AvisoDemora";
 
 export default function Register() {
   const [nome, setNome] = useState("");
@@ -152,6 +153,7 @@ export default function Register() {
             "Criar conta"
           )}
         </Button>
+        <AvisoDemora ativo={loading} />
       </form>
     </AuthLayout>
   );
