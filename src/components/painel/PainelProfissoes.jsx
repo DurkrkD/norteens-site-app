@@ -14,8 +14,10 @@ const vazio = () => ({
   nome: "", icone: "", descricao: "", formacao: "", comportamentais: "", salario: "",
   tecnicas: "", regioes: "", ferramentas: "",
 });
-// aceita itens separados por vírgula OU um por linha
-const paraLista = (s) => s.split(/[,\n]+/).map((x) => x.trim()).filter(Boolean);
+// um item por linha; vírgula só separa quando tudo está numa linha só. Assim um item como
+// "Indústrias (Automotiva, Saúde, Logística)" não é picado nas vírgulas.
+const paraLista = (s) =>
+  s.split(s.includes("\n") ? /\n+/ : /,+/).map((x) => x.trim()).filter(Boolean);
 
 export default function PainelProfissoes() {
   const { toast } = useToast();
