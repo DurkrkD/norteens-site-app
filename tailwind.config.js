@@ -64,13 +64,15 @@ module.exports = {
   			}
   		},
   		boxShadow: {
-  			soft: '0 6px 18px -10px rgba(28, 42, 58, 0.20)',
-  			'soft-lg': '0 14px 34px -16px rgba(28, 42, 58, 0.24)',
+  			soft: '0 1px 2px rgba(15, 46, 38, 0.04), 0 4px 12px -6px rgba(15, 46, 38, 0.10)',
+  			'soft-lg': '0 1px 2px rgba(15, 46, 38, 0.04), 0 18px 40px -18px rgba(15, 46, 38, 0.22)',
+  			elevated: '0 2px 4px rgba(15, 46, 38, 0.04), 0 30px 60px -24px rgba(15, 46, 38, 0.30)',
   		},
   		fontFamily: {
   			heading: ['var(--font-heading)'],
   			body: ['var(--font-body)'],
   			display: ['var(--font-display)'],
+  			serif: ['var(--font-serif)'],
   			mono: ['var(--font-mono)']
   		},
   		keyframes: {
@@ -89,11 +91,16 @@ module.exports = {
   				to: {
   					height: '0'
   				}
+  			},
+  			'fade-up': {
+  				from: { opacity: '0', transform: 'translateY(10px)' },
+  				to: { opacity: '1', transform: 'translateY(0)' }
   			}
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out'
+  			'accordion-up': 'accordion-up 0.2s ease-out',
+  			'fade-up': 'fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both'
   		}
   	}
   },

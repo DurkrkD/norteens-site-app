@@ -17,10 +17,12 @@ export function PageHeader({ eyebrow, title, description, actions, back }) {
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div className="max-w-2xl">
           {eyebrow && (
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-accent mb-2">{eyebrow}</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent mb-3">{eyebrow}</p>
           )}
-          <h1 className="text-3xl sm:text-4xl font-semibold text-foreground leading-tight">{title}</h1>
-          {description && <p className="mt-2.5 text-muted-foreground leading-relaxed">{description}</p>}
+          <h1 className="text-[2.1rem] sm:text-[2.75rem] font-bold tracking-[-0.03em] text-foreground leading-[1.08] text-balance">
+            {title}
+          </h1>
+          {description && <p className="mt-3 text-lg text-muted-foreground leading-relaxed text-pretty">{description}</p>}
         </div>
         {actions && <div className="flex items-center gap-2 shrink-0">{actions}</div>}
       </div>

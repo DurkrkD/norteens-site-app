@@ -11,7 +11,8 @@ export default function AppLayout() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
-  const noPainel = location.pathname.startsWith("/painel");
+  // painel (ferramenta de trabalho) e teste (foco total na pergunta) ficam sem rodapé
+  const semRodape = location.pathname.startsWith("/painel") || location.pathname.startsWith("/teste");
 
   useEffect(() => {
     const load = async () => {
@@ -41,7 +42,7 @@ export default function AppLayout() {
       <main className="flex-1">
         <Outlet context={{ user, setUser }} />
       </main>
-      {!noPainel && <Footer />}
+      {!semRodape && <Footer />}
       <MobileBottomTabs />
     </div>
   );

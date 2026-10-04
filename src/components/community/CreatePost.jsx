@@ -1,79 +1,107 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
+import { ImagePlus, Loader2, X } from "lucide-react";
 import { norteens } from "@/api/norteensClient";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { ImagePlus, Send } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import UserAvatar from "@/components/UserAvatar";
+
+const LIMITE = 1000;
 
 export default function CreatePost({ user, onCreated }) {
+  const { toast } = useToast();
   const [texto, setTexto] = useState("");
   const [imagem, setImagem] = useState("");
   const [sending, setSending] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const campo = useRef(null);
 
-  const handleSubmit = async () => {
-    if (!texto.trim()) return;
-    setSending(true);
-
-    // Optimistic: create a temp post object so it appears immediately
-    const tempId = `optimistic-${Date.now()}`;
-    const optimisticPost = {
-      id: tempId,
-      autor: user.id,
-      texto: texto.trim(),
-      imagem: imagem.trim() || undefined,
-      criado_em: new Date().toISOString(),
-      _optimistic: true,
-    };
-    onCreated(optimisticPost);
-
-    setTexto("");
-    setImagem("");
-
-   try {
-      await norteens.criarPost(optimisticPost.texto, optimisticPost.imagem);
-    } finally {
-      setSending(false);
-      onCreated(); // sincroniza com o servidor, substituindo o post temporário
-    }
+  // o campo cresce conforme o texto, até um limite
+  const digitar = (e) => {
+    setTexto(e.target.value.slice(0, LIMITE));
+    e.target.style.height = "auto";
+    e.target.style.height = `${Math.min(e.target.scrollHeight, 320)}px`;
   };
 
-  const handleImageUpload = async (e) => {
+  const publicar = async () => {
+    if (!texto.trim() || sending) return;
+    setSending(true);
+    try {
+      await norteens.criarPost(texto.trim(), imagem || undefined);
+      setTexto("");
+      setImagem("");
+      if (campo.current) campo.current.style.height = "auto";
+      onCreated();
+    } catch (err) {
+      // o texto continua no campo para a pessoa tentar de novo
+      toast({ title: "Não foi possível publicar", description: err.message, variant: "destructive" });
+    }
+    setSending(false);
+  };
+
+  const enviarImagem = async (e) => {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
     setUploading(true);
     try {
-      const url = await norteens.uploadImagem(file);
-      setImagem(url);
-    } finally {
-      setUploading(false);
+      setImagem(await norteens.uploadImagem(file));
+    } catch (err) {
+      toast({ title: "Não foi possível enviar a imagem", description: err.message, variant: "destructive" });
     }
+    setUploading(false);
   };
+
   return (
-    <div className="bg-card rounded-2xl border border-border p-5">
-      <Textarea
-        placeholder="O que você quer compartilhar?"
-        value={texto}
-        onChange={(e) => setTexto(e.target.value)}
-        rows={3}
-        className="resize-none border-0 bg-transparent focus-visible:ring-0 p-0 text-foreground placeholder:text-muted-foreground"
-      />
-      {imagem && (
-        <div className="mt-3 relative">
-          <img src={imagem} alt="" className="rounded-xl max-h-48 object-cover" />
-          <button onClick={() => setImagem("")} className="absolute top-2 right-2 bg-black/50 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">×</button>
+    <div className="rounded-2xl bg-card border border-border shadow-soft">
+      <div className="flex gap-3 p-4 sm:p-5">
+        <UserAvatar user={user} size="md" />
+        <div className="flex-1 min-w-0">
+          <textarea
+            ref={campo}
+            rows={2}
+            value={texto}
+            onChange={digitar}
+            onKeyDown={(e) => (e.ctrlKey || e.metaKey) && e.key === "Enter" && publicar()}
+            placeholder="Compartilhe uma dúvida, descoberta ou conquista..."
+            aria-label="Escreva sua publicação"
+            className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-muted-foreground focus:outline-none pt-1.5 leading-relaxed"
+          />
+          {imagem && (
+            <div className="relative mt-3 inline-block">
+              <img src={imagem} alt="Imagem anexada" className="rounded-xl max-h-60 border border-border object-cover" />
+              <button
+                onClick={() => setImagem("")}
+                aria-label="Remover imagem"
+                className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </div>
-      )}
-      <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
-        <div>
-          <label className="cursor-pointer p-2 rounded-lg hover:bg-muted transition-colors inline-flex items-center gap-1 text-sm text-muted-foreground">
-            <ImagePlus className="w-4 h-4" /> {uploading ? "Enviando..." : "Imagem"}
-            <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" disabled={uploading} />
-          </label>
+      </div>
+      <div className="flex items-center justify-between gap-3 px-4 sm:px-5 py-3 border-t border-border">
+        <label
+          className={`inline-flex items-center gap-2 h-9 px-3 rounded-full text-sm font-medium text-muted-foreground transition-colors ${
+            uploading ? "opacity-60" : "cursor-pointer hover:bg-muted hover:text-foreground"
+          }`}
+        >
+          {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImagePlus className="w-4 h-4" />}
+          {uploading ? "Enviando..." : "Imagem"}
+          <input type="file" accept="image/*" onChange={enviarImagem} className="hidden" disabled={uploading} />
+        </label>
+        <div className="flex items-center gap-3">
+          {texto.length > LIMITE * 0.8 && (
+            <span className={`text-xs tabular-nums ${texto.length >= LIMITE ? "text-destructive" : "text-muted-foreground"}`}>
+              {texto.length}/{LIMITE}
+            </span>
+          )}
+          <Button onClick={publicar} disabled={sending || uploading || !texto.trim()}>
+            {sending && <Loader2 className="animate-spin" />}
+            Publicar
+          </Button>
         </div>
-        <Button onClick={handleSubmit} disabled={sending || !texto.trim()} size="sm" className="bg-primary hover:bg-primary/90">
-          {sending ? "Publicando..." : <><Send className="w-4 h-4 mr-1" /> Publicar</>}
-        </Button>
       </div>
     </div>
-  )
-};
+  );
+}

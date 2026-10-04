@@ -31,7 +31,7 @@ export default function PainelVisaoGeral({ user }) {
   const incompletas = profissoes.filter((p) => !fichaCompleta(p));
   const alunos = usuarios.filter((u) => u.papel === "usuario");
   const testesFeitos = alunos.filter((u) => u.teste_feito).length;
-  const publicos = feedbacks.filter((f) => f.autorizar_exibicao).length;
+  const publicos = feedbacks.filter((f) => f.destaque).length;
 
   const pendencias = [
     profissoes.length === 0 && { texto: "Nenhuma profissão publicada: o guia vocacional está vazio.", to: "/painel/profissoes" },
@@ -57,7 +57,7 @@ export default function PainelVisaoGeral({ user }) {
           cor="bg-primary/10 text-primary" />
         <StatCard icon={Sparkles} label="Famosos" valor={famosos.length} detalhe="Ligados às profissões" cor="bg-accent/15 text-accent" />
         <StatCard icon={MessageSquareHeart} label="Feedbacks" valor={feedbacks.length}
-          detalhe={`${publicos} ${publicos === 1 ? "autorizado" : "autorizados"} para a página inicial`}
+          detalhe={`${publicos} ${publicos === 1 ? "destacado" : "destacados"} na página inicial`}
           cor="bg-highlight/25 text-[#8a5a12]" />
         {admin && (
           <StatCard icon={Users} label="Alunos" valor={alunos.length}

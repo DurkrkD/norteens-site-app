@@ -1,28 +1,29 @@
-/* fontes (Poppins nos títulos, Inter no texto) são carregadas no index.html */
+/* fontes carregadas no index.html: Plus Jakarta Sans (títulos), Instrument Serif (destaques
+   em itálico) e Inter (texto) */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 :root {
-    --background: 33 56% 94%;
-    --foreground: 153 37% 14%;
+    --background: 36 45% 96%;
+    --foreground: 155 38% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 153 37% 14%;
+    --card-foreground: 155 38% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 153 37% 14%;
+    --popover-foreground: 155 38% 10%;
     --primary: 165 51% 12%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 155 45% 20%;
+    --secondary: 155 45% 22%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 34 47% 88%;
-    --muted-foreground: 148 6% 46%;
-    --accent: 15 73% 62%;
+    --muted: 38 33% 92%;
+    --muted-foreground: 150 6% 38%;
+    --accent: 14 72% 58%;
     --accent-foreground: 0 0% 100%;
-    --highlight: 39 86% 61%;
-    --cream-2: 34 47% 88%;
-    --destructive: 0 84% 60%;
+    --highlight: 39 86% 58%;
+    --cream-2: 38 35% 92%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
-    --border: 39 40% 85%;
-    --input: 39 40% 85%;
+    --border: 40 24% 87%;
+    --input: 40 24% 85%;
     --ring: 155 45% 20%;
     --chart-1: 15 73% 62%;
     --chart-2: 155 45% 20%;
@@ -30,9 +31,10 @@
     --chart-4: 39 86% 61%;
     --chart-5: 14 61% 53%;
     --radius: 1rem;
-    --font-heading: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    --font-heading: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
     --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
-    --font-display: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-serif: 'Instrument Serif', ui-serif, Georgia, serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 153 37% 14%;
@@ -45,15 +47,16 @@
   }
 
   .dark {
-    --background: 163 53% 9%;
+    --background: 163 45% 7%;
     --foreground: 120 13% 94%;
-    --card: 165 51% 12%;
+    --card: 165 40% 10%;
     --card-foreground: 120 13% 94%;
     --popover: 165 51% 12%;
     --popover-foreground: 120 13% 94%;
     --primary: 15 73% 62%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 155 45% 20%;
+    /* verde mais claro no escuro: o 20% de luminosidade sumia como texto (salários, selos) */
+    --secondary: 152 38% 52%;
     --secondary-foreground: 120 13% 94%;
     --muted: 165 40% 16%;
     --muted-foreground: 146 11% 75%;
@@ -108,5 +111,26 @@
   [role="button"] {
     -webkit-user-select: none;
     user-select: none;
+  }
+}
+
+@layer utilities {
+  /* grade sutil de fundo (hero, faixas de destaque) */
+  .bg-grade {
+    background-image:
+      linear-gradient(to right, hsl(var(--foreground) / 0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--foreground) / 0.045) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  /* some a grade nas bordas, para não ficar "quadriculado" */
+  .mask-fade {
+    -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 35%, #000 40%, transparent 100%);
+    mask-image: radial-gradient(ellipse 75% 65% at 50% 35%, #000 40%, transparent 100%);
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
   }
 }

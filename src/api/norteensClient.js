@@ -406,6 +406,19 @@ export const norteens = {
     return r;
   },
 
+  // [EQUIPE] destaca (ou tira o destaque de) um feedback na página inicial
+  async destacarFeedback(id, destaque) {
+    const token = localStorage.getItem('token');
+    const resposta = await fetch(`${API_URL}/feedbacks/${id}/destaque`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ destaque })
+    });
+    const r = await resposta.json();
+    if (!resposta.ok) throw new Error(r.erro || 'Erro ao destacar feedback');
+    return r;
+  },
+
   // [ADMIN] lista todos os usuários
   async listarUsuarios() {
     const token = localStorage.getItem('token');

@@ -1,34 +1,52 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useOutletContext, Link } from "react-router-dom";
+import { ChevronRight, GraduationCap, Brain, Star, MapPin, Wrench, CheckCircle2, SearchX, Wallet, ArrowRight } from "lucide-react";
 import { norteens } from "@/api/norteensClient";
-import { ArrowLeft, GraduationCap, Brain, Star, MapPin, Wrench, CheckCircle2, SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { PageContainer, PageLoading, EmptyState } from "@/components/layout/Page";
+import CardProfissao from "@/components/profissoes/CardProfissao";
 import { isEquipe } from "@/utils/papeis";
 
-function Secao({ icon: Icon, titulo, children }) {
+// bloco de conteúdo da ficha: título com ícone + texto, separado por linha
+function Bloco({ icon: Icon, titulo, children }) {
   return (
-    <section className="p-6 bg-card rounded-2xl border border-border">
-      <h2 className="text-base font-semibold text-foreground flex items-center gap-2.5 mb-3">
-        <span className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
-          <Icon className="w-4 h-4 text-primary" />
+    <section className="py-8 border-t border-border first:border-t-0 first:pt-0">
+      <h2 className="flex items-center gap-3 text-xl font-bold text-foreground">
+        <span className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center">
+          <Icon className="w-[18px] h-[18px] text-foreground" strokeWidth={1.8} />
         </span>
         {titulo}
       </h2>
-      {children}
+      <div className="mt-4 pl-12">{children}</div>
     </section>
   );
 }
 
-function Etiquetas({ itens, cor }) {
+// listas cadastradas podem vir separadas por vírgula OU uma por linha: aqui viram itens separados
+const itensDe = (lista) =>
+  (lista || []).flatMap((s) => String(s).split(/\n+/)).map((s) => s.trim().replace(/[.;]$/, "")).filter(Boolean);
+
+function Etiquetas({ itens }) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <ul className="flex flex-wrap gap-2">
       {itens.map((t) => (
-        <span key={t} className={`px-3 py-1 text-xs font-medium rounded-full ${cor}`}>
+        <li key={t} className="px-3 py-1.5 text-sm font-medium rounded-lg bg-card border border-border text-foreground">
           {t}
-        </span>
+        </li>
       ))}
+    </ul>
+  );
+}
+
+function Fato({ icon: Icon, rotulo, valor }) {
+  if (!valor) return null;
+  return (
+    <div className="flex-1 min-w-[180px] rounded-2xl bg-card border border-border px-5 py-4">
+      <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+        <Icon className="w-3.5 h-3.5" /> {rotulo}
+      </p>
+      <p className="mt-1.5 font-semibold text-foreground leading-snug">{valor}</p>
     </div>
   );
 }
@@ -39,11 +57,13 @@ export default function ProfissaoDetalhe() {
   const { toast } = useToast();
   const [profissao, setProfissao] = useState(null);
   const [famosos, setFamosos] = useState([]);
+  const [outras, setOutras] = useState([]);
   const [loading, setLoading] = useState(true);
   const [choosing, setChoosing] = useState(false);
 
   useEffect(() => {
     setLoading(true);
+    window.scrollTo(0, 0);
     Promise.all([norteens.getProfissao(id), norteens.getFamosos(id)])
       .then(([p, f]) => {
         setProfissao(p);
@@ -51,6 +71,10 @@ export default function ProfissaoDetalhe() {
       })
       .catch(() => setProfissao(null))
       .finally(() => setLoading(false));
+    norteens
+      .listarProfissoes()
+      .then((todas) => setOutras(todas.filter((p) => String(p.id) !== String(id)).slice(0, 3)))
+      .catch(() => {});
   }, [id]);
 
   const handleEscolher = async () => {
@@ -86,120 +110,132 @@ export default function ProfissaoDetalhe() {
   }
 
   const escolhida = user && String(user.profissao_escolhida) === String(profissao.id);
-  const temListas = profissao.tecnicas?.length || profissao.regioes?.length || profissao.ferramentas?.length;
+  const p = profissao;
+  const tecnicas = itensDe(p.tecnicas);
+  const regioes = itensDe(p.regioes);
+  const ferramentas = itensDe(p.ferramentas);
 
   return (
-    <PageContainer>
-      <Link
-        to="/profissoes"
-        className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-6"
-      >
-        <ArrowLeft className="w-4 h-4" /> Todas as profissões
-      </Link>
+    <div>
+      {/* cabeçalho */}
+      <section className="relative border-b border-border overflow-hidden">
+        <div className="absolute inset-0 bg-grade mask-fade pointer-events-none" />
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-10 sm:pb-12">
+          <nav aria-label="Caminho" className="flex items-center gap-1 text-sm text-muted-foreground">
+            <Link to="/profissoes" className="hover:text-foreground transition-colors">Profissões</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground truncate">{p.nome}</span>
+          </nav>
 
-      {/* cabeçalho da ficha */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-5 mb-10">
-        <div className="w-16 h-16 rounded-2xl bg-card border border-border shadow-soft flex items-center justify-center text-4xl shrink-0">
-          {profissao.icone || "💼"}
-        </div>
-        <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-accent mb-1.5">Ficha da profissão</p>
-          <h1 className="text-3xl sm:text-4xl font-semibold text-foreground leading-tight">{profissao.nome}</h1>
-          {profissao.salario && (
-            <span className="inline-block mt-3 text-sm font-semibold text-secondary bg-secondary/10 px-3 py-1 rounded-full">
-              {profissao.salario}
-            </span>
-          )}
-        </div>
-      </div>
-
-      <div className="grid lg:grid-cols-[1fr_320px] gap-6 items-start">
-        <div className="space-y-5">
-          {profissao.descricao && (
-            <p className="text-[17px] text-foreground/90 leading-relaxed whitespace-pre-line">{profissao.descricao}</p>
-          )}
-
-          <div className="grid sm:grid-cols-2 gap-5">
-            {profissao.formacao && (
-              <Secao icon={GraduationCap} titulo="Formação">
-                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{profissao.formacao}</p>
-              </Secao>
-            )}
-            {profissao.comportamentais && (
-              <Secao icon={Brain} titulo="Competências comportamentais">
-                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                  {profissao.comportamentais}
+          <div className="mt-8 flex flex-col sm:flex-row sm:items-start gap-6">
+            <div className="w-20 h-20 rounded-3xl bg-card border border-border shadow-soft-lg flex items-center justify-center text-5xl shrink-0">
+              {p.icone || "💼"}
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-[2.2rem] sm:text-5xl font-bold tracking-[-0.03em] leading-[1.05] text-foreground text-balance">
+                {p.nome}
+              </h1>
+              {p.descricao && (
+                <p className="mt-4 text-lg text-muted-foreground leading-relaxed max-w-3xl whitespace-pre-line text-pretty">
+                  {p.descricao}
                 </p>
-              </Secao>
-            )}
-          </div>
-
-          {temListas ? (
-            <div className="grid sm:grid-cols-3 gap-5">
-              {profissao.tecnicas?.length > 0 && (
-                <Secao icon={Star} titulo="Técnicas">
-                  <Etiquetas itens={profissao.tecnicas} cor="bg-primary/10 text-primary" />
-                </Secao>
-              )}
-              {profissao.regioes?.length > 0 && (
-                <Secao icon={MapPin} titulo="Onde há vagas">
-                  <Etiquetas itens={profissao.regioes} cor="bg-secondary/10 text-secondary" />
-                </Secao>
-              )}
-              {profissao.ferramentas?.length > 0 && (
-                <Secao icon={Wrench} titulo="Ferramentas">
-                  <Etiquetas itens={profissao.ferramentas} cor="bg-accent/15 text-accent" />
-                </Secao>
               )}
             </div>
-          ) : null}
+          </div>
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Fato icon={Wallet} rotulo="Faixa salarial" valor={p.salario} />
+            <Fato icon={MapPin} rotulo="Onde há vagas" valor={regioes.length ? `${regioes.length} ${regioes.length === 1 ? "área de atuação" : "áreas de atuação"}` : null} />
+            <Fato icon={Star} rotulo="Habilidades técnicas" valor={tecnicas.length ? `${tecnicas.length} principais` : null} />
+            <Fato icon={Wrench} rotulo="Ferramentas" valor={ferramentas.length ? `${ferramentas.length} do dia a dia` : null} />
+          </div>
         </div>
+      </section>
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 grid lg:grid-cols-[1fr_340px] gap-12 items-start">
+        <article>
+          {p.formacao && (
+            <Bloco icon={GraduationCap} titulo="Formação">
+              <p className="text-[15px] text-foreground/85 leading-relaxed whitespace-pre-line">{p.formacao}</p>
+            </Bloco>
+          )}
+          {p.comportamentais && (
+            <Bloco icon={Brain} titulo="Competências comportamentais">
+              <p className="text-[15px] text-foreground/85 leading-relaxed whitespace-pre-line">{p.comportamentais}</p>
+            </Bloco>
+          )}
+          {tecnicas.length > 0 && (
+            <Bloco icon={Star} titulo="Habilidades técnicas">
+              <Etiquetas itens={tecnicas} />
+            </Bloco>
+          )}
+          {ferramentas.length > 0 && (
+            <Bloco icon={Wrench} titulo="Ferramentas do dia a dia">
+              <Etiquetas itens={ferramentas} />
+            </Bloco>
+          )}
+          {regioes.length > 0 && (
+            <Bloco icon={MapPin} titulo="Onde há vagas">
+              <Etiquetas itens={regioes} />
+            </Bloco>
+          )}
+          {!p.formacao && !p.comportamentais && !tecnicas.length && !ferramentas.length && !regioes.length && (
+            <p className="text-muted-foreground">Os detalhes desta ficha ainda estão sendo preparados.</p>
+          )}
+        </article>
 
         <aside className="space-y-5 lg:sticky lg:top-24">
           {user && escolhida && (
             <div className="p-6 rounded-2xl bg-secondary/10 border border-secondary/20">
-              <CheckCircle2 className="w-6 h-6 text-secondary mb-2" />
-              <p className="font-heading font-semibold text-foreground">Esta é a sua profissão escolhida</p>
+              <CheckCircle2 className="w-6 h-6 text-secondary mb-3" />
+              <p className="font-heading font-bold text-foreground">Esta é a sua profissão escolhida</p>
               <p className="text-sm text-muted-foreground mt-1">Ela aparece no seu resultado.</p>
             </div>
           )}
           {user && !user.profissao_escolhida && !isEquipe(user) && (
-            <div className="p-6 rounded-2xl bg-card border border-border shadow-soft">
-              <p className="font-heading font-semibold text-foreground">Essa profissão combina com você?</p>
-              <p className="text-sm text-muted-foreground mt-1 mb-4">
-                Marque como sua escolha. Atenção: depois não dá para trocar.
+            <div className="p-6 rounded-2xl bg-card border border-border shadow-soft-lg">
+              <p className="font-heading text-lg font-bold text-foreground">Essa profissão combina com você?</p>
+              <p className="text-sm text-muted-foreground mt-1.5 mb-5">
+                Marque como sua escolha para acompanhar no seu resultado. Depois não dá para trocar.
               </p>
-              <Button onClick={handleEscolher} disabled={choosing} className="w-full">
+              <Button onClick={handleEscolher} disabled={choosing} size="lg" className="w-full">
                 {choosing ? "Salvando..." : "Escolher esta profissão"}
               </Button>
             </div>
           )}
           {!user && (
-            <div className="p-6 rounded-2xl bg-card border border-border">
-              <p className="font-heading font-semibold text-foreground">Combina com você?</p>
-              <p className="text-sm text-muted-foreground mt-1 mb-4">
-                Crie sua conta, faça o teste e descubra seu perfil.
+            <div className="p-6 rounded-2xl bg-[#0f2e26] text-[#f8f0e6]">
+              <p className="font-heading text-lg font-bold">Combina com você?</p>
+              <p className="text-sm text-[#f8f0e6]/70 mt-1.5 mb-5">
+                Faça o teste grátis e descubra seu perfil em 3 minutos.
               </p>
-              <Button asChild className="w-full">
-                <Link to="/register">Criar conta grátis</Link>
-              </Button>
+              <Link
+                to="/register"
+                className="group flex items-center justify-center gap-2 h-12 rounded-full bg-[#f8f0e6] text-[#0f2e26] font-semibold hover:bg-white transition-colors"
+              >
+                Começar grátis <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
             </div>
           )}
 
           {famosos.length > 0 && (
             <div className="p-6 rounded-2xl bg-card border border-border">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground mb-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground mb-5">
                 Quem inspira nessa área
               </p>
-              <ul className="space-y-4">
-                {famosos.map((f) => (
+              <ul className="space-y-5">
+                {famosos.map((f, i) => (
                   <li key={f.id} className="flex gap-3">
-                    <span className="w-9 h-9 rounded-full bg-accent/15 text-accent font-semibold text-sm flex items-center justify-center shrink-0">
+                    <span
+                      className={`w-10 h-10 rounded-full font-heading font-bold flex items-center justify-center shrink-0 ${
+                        ["bg-accent/15 text-accent", "bg-secondary/15 text-secondary", "bg-highlight/25 text-[#8a5a12]"][i % 3]
+                      }`}
+                    >
                       {f.nome?.charAt(0)}
                     </span>
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-foreground">{f.nome}</p>
-                      {f.bio && <p className="text-xs text-muted-foreground mt-0.5 line-clamp-3">{f.bio}</p>}
+                      {f.bio && <p className="text-[13px] text-muted-foreground mt-0.5 leading-relaxed line-clamp-3">{f.bio}</p>}
                     </div>
                   </li>
                 ))}
@@ -208,6 +244,24 @@ export default function ProfissaoDetalhe() {
           )}
         </aside>
       </div>
-    </PageContainer>
+
+      {outras.length > 0 && (
+        <section className="border-t border-border bg-cream-2/50">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14">
+            <div className="flex items-end justify-between gap-4 mb-8">
+              <h2 className="text-2xl font-bold tracking-tight text-foreground">Continue explorando</h2>
+              <Link to="/profissoes" className="text-sm font-semibold text-foreground hover:text-accent transition-colors">
+                Ver todas
+              </Link>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {outras.map((o) => (
+                <CardProfissao key={o.id} profissao={o} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+    </div>
   );
 }

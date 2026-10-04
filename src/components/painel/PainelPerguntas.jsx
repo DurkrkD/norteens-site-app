@@ -2,14 +2,8 @@ import React from "react";
 import { Info } from "lucide-react";
 import { PERGUNTAS_TESTE } from "@/data/perguntasTeste";
 import { SecaoHeader } from "@/components/painel/ui";
+import { PERFIS } from "@/data/perfis";
 
-// mesmos perfis de server/perfisTeste.js
-const PERFIS = {
-  D: { nome: "Executor(a)", resumo: "Decide rápido, lidera, foca em resultado.", cor: "bg-accent/15 text-accent" },
-  I: { nome: "Comunicador(a)", resumo: "Sociável, entusiasmado(a), influencia o grupo.", cor: "bg-highlight/25 text-[#8a5a12]" },
-  S: { nome: "Cuidador(a)", resumo: "Paciente, leal, valoriza estabilidade e harmonia.", cor: "bg-secondary/15 text-secondary" },
-  C: { nome: "Analista", resumo: "Detalhista, organizado(a), decide com dados.", cor: "bg-primary/10 text-primary" },
-};
 
 export default function PainelPerguntas() {
   return (
@@ -33,7 +27,7 @@ export default function PainelPerguntas() {
         {Object.entries(PERFIS).map(([eixo, perfil]) => (
           <section key={eixo} className="p-5 rounded-2xl bg-card border border-border">
             <div className="flex items-center gap-3 mb-4">
-              <span className={`w-10 h-10 rounded-xl font-heading font-bold flex items-center justify-center ${perfil.cor}`}>
+              <span className={`w-10 h-10 rounded-xl font-heading font-bold flex items-center justify-center ${perfil.suave}`}>
                 {eixo}
               </span>
               <div>

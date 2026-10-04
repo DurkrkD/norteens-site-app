@@ -14,7 +14,8 @@ const vazio = () => ({
   nome: "", icone: "", descricao: "", formacao: "", comportamentais: "", salario: "",
   tecnicas: "", regioes: "", ferramentas: "",
 });
-const paraLista = (s) => s.split(",").map((x) => x.trim()).filter(Boolean);
+// aceita itens separados por vírgula OU um por linha
+const paraLista = (s) => s.split(/[,\n]+/).map((x) => x.trim()).filter(Boolean);
 
 export default function PainelProfissoes() {
   const { toast } = useToast();
@@ -48,8 +49,9 @@ export default function PainelProfissoes() {
     setForm({
       nome: p.nome || "", icone: p.icone || "", descricao: p.descricao || "", formacao: p.formacao || "",
       comportamentais: p.comportamentais || "", salario: p.salario || "",
-      tecnicas: (p.tecnicas || []).join(", "), regioes: (p.regioes || []).join(", "),
-      ferramentas: (p.ferramentas || []).join(", "),
+      // um item por linha (mais fácil de ler e corrigir do que tudo separado por vírgula)
+      tecnicas: (p.tecnicas || []).join("\n"), regioes: (p.regioes || []).join("\n"),
+      ferramentas: (p.ferramentas || []).join("\n"),
     });
     setDialogOpen(true);
   };
@@ -180,11 +182,11 @@ export default function PainelProfissoes() {
               </div>
             </GrupoForm>
 
-            <GrupoForm titulo="Detalhes (separe por vírgula)">
-              <Campo label="Técnicas"><Input value={form.tecnicas} onChange={set("tecnicas")} placeholder="Cálculo estrutural, AutoCAD, ..." /></Campo>
+            <GrupoForm titulo="Detalhes (um item por linha)">
+              <Campo label="Habilidades técnicas"><Textarea value={form.tecnicas} onChange={set("tecnicas")} rows={4} placeholder={"Cálculo estrutural\nGestão de obras\n..."} /></Campo>
               <div className="grid sm:grid-cols-2 gap-4">
-                <Campo label="Onde há vagas"><Input value={form.regioes} onChange={set("regioes")} placeholder="Sudeste, Sul, ..." /></Campo>
-                <Campo label="Ferramentas"><Input value={form.ferramentas} onChange={set("ferramentas")} placeholder="Revit, Excel, ..." /></Campo>
+                <Campo label="Onde há vagas"><Textarea value={form.regioes} onChange={set("regioes")} rows={4} placeholder={"Construtoras\nÓrgãos públicos\n..."} /></Campo>
+                <Campo label="Ferramentas"><Textarea value={form.ferramentas} onChange={set("ferramentas")} rows={4} placeholder={"AutoCAD\nRevit\n..."} /></Campo>
               </div>
             </GrupoForm>
 

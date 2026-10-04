@@ -1,28 +1,39 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import HeroSection from "@/components/home/HeroSection";
-import AboutSection from "@/components/home/AboutSection";
-import AudienceSection from "@/components/home/AudienceSection";
-import HowItWorks from "@/components/home/HowItWorks";
-import FeaturesSection from "@/components/home/FeaturesSection";
+import { norteens } from "@/api/norteensClient";
+import Hero from "@/components/home/Hero";
+import Numeros from "@/components/home/Numeros";
+import ComoFunciona from "@/components/home/ComoFunciona";
+import Recursos from "@/components/home/Recursos";
+import ProfissoesDestaque from "@/components/home/ProfissoesDestaque";
 import TestimonialSection from "@/components/home/TestimonialSection";
-import CtaBand from "@/components/home/CtaBand";
+import Perguntas from "@/components/home/Perguntas";
+import ChamadaFinal from "@/components/home/ChamadaFinal";
 import ProgressoCard from "@/components/progresso/ProgressoCard";
 import { isEquipe } from "@/utils/papeis";
 
 export default function Home() {
   const { user } = useOutletContext();
+  const [profissoes, setProfissoes] = useState([]);
+  const [famosos, setFamosos] = useState([]);
+
+  // conteúdo real para os números, a grade de recursos e as profissões em destaque
+  useEffect(() => {
+    norteens.listarProfissoes().then(setProfissoes).catch(() => {});
+    norteens.listarFamosos().then(setFamosos).catch(() => {});
+  }, []);
 
   return (
     <div>
-      <HeroSection user={user} />
+      <Hero user={user} />
       {user && !isEquipe(user) && <ProgressoCard user={user} />}
-      <AboutSection />
-      <AudienceSection />
-      <HowItWorks />
-      <FeaturesSection />
+      <Numeros profissoes={profissoes.length} famosos={famosos.length} />
+      <ComoFunciona />
+      <Recursos profissoes={profissoes} famosos={famosos} />
+      <ProfissoesDestaque profissoes={profissoes} />
       <TestimonialSection />
-      <CtaBand user={user} />
+      <Perguntas />
+      <ChamadaFinal user={user} />
     </div>
   );
 }
