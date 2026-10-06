@@ -229,13 +229,17 @@ export default function ProfissaoDetalhe() {
               <ul className="space-y-5">
                 {famosos.map((f, i) => (
                   <li key={f.id} className="flex gap-3">
-                    <span
-                      className={`w-10 h-10 rounded-full font-heading font-bold flex items-center justify-center shrink-0 ${
-                        ["bg-accent/15 text-accent", "bg-secondary/15 text-secondary", "bg-highlight/25 text-[#8a5a12]"][i % 3]
-                      }`}
-                    >
-                      {f.nome?.charAt(0)}
-                    </span>
+                    {f.foto_url ? (
+                      <img src={f.foto_url} alt="" loading="lazy" className="w-10 h-10 rounded-full object-cover object-top shrink-0" />
+                    ) : (
+                      <span
+                        className={`w-10 h-10 rounded-full font-heading font-bold flex items-center justify-center shrink-0 ${
+                          ["bg-accent/15 text-accent", "bg-secondary/15 text-secondary", "bg-highlight/25 text-[#8a5a12]"][i % 3]
+                        }`}
+                      >
+                        {f.nome?.charAt(0)}
+                      </span>
+                    )}
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-foreground">{f.nome}</p>
                       {f.bio && <p className="text-[13px] text-muted-foreground mt-0.5 leading-relaxed line-clamp-3">{f.bio}</p>}

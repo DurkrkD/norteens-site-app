@@ -5,6 +5,7 @@ import { norteens } from "@/api/norteensClient";
 import { Button } from "@/components/ui/button";
 import { PageLoading, EmptyState } from "@/components/layout/Page";
 import CardProfissao from "@/components/profissoes/CardProfissao";
+import Revelar from "@/components/Revelar";
 import { marcarMarco } from "@/utils/progresso";
 import { isEquipe } from "@/utils/papeis";
 
@@ -163,8 +164,11 @@ export default function Profissoes() {
               />
             ) : (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                {filtradas.map((p) => (
-                  <CardProfissao key={p.id} profissao={p} />
+                {filtradas.map((p, i) => (
+                  // entram em cascata (o atraso para de crescer depois das primeiras, para não demorar)
+                  <Revelar key={p.id} atraso={Math.min(i, 8) * 0.05} className="h-full">
+                    <CardProfissao profissao={p} />
+                  </Revelar>
                 ))}
               </div>
             )}

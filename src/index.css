@@ -152,6 +152,65 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+/* ---------- cartas dos famosos: 3D, virar e brilho holográfico ---------- */
+.carta-cena {
+  --rx: 0deg;
+  --ry: 0deg;
+  --mx: 50%;
+  --my: 50%;
+  --brilho: 0;
+  perspective: 1100px;
+}
+/* duas camadas: a inclinação segue o mouse rápido; o virar é lento e com um leve "quique" no fim */
+.carta-inclinacao {
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 0.18s ease-out;
+}
+.carta-corpo {
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.2, 0.75, 0.25, 1.15);
+}
+.carta-virada {
+  transform: rotateY(180deg);
+}
+.carta-face {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.carta-verso {
+  transform: rotateY(180deg);
+}
+.carta-holo {
+  opacity: calc(var(--brilho) * 0.55);
+  transition: opacity 0.4s ease;
+  mix-blend-mode: color-dodge;
+  background:
+    linear-gradient(
+      115deg,
+      transparent 25%,
+      rgba(255, 120, 180, 0.35) 40%,
+      rgba(255, 230, 120, 0.4) 47%,
+      rgba(120, 230, 200, 0.35) 54%,
+      rgba(120, 160, 255, 0.35) 61%,
+      transparent 75%
+    );
+  background-size: 260% 260%;
+  background-position: var(--mx) var(--my);
+}
+.carta-reflexo {
+  opacity: var(--brilho);
+  transition: opacity 0.4s ease;
+  background: radial-gradient(circle at var(--mx) var(--my), rgba(255, 255, 255, 0.35), transparent 45%);
+  mix-blend-mode: soft-light;
+}
+@media (prefers-reduced-motion: reduce) {
+  .carta-corpo,
+  .carta-inclinacao {
+    transition: none;
+  }
+}
+
 /* quem pede menos movimento no sistema não vê faixa rolando nem cartões flutuando */
 @media (prefers-reduced-motion: reduce) {
   .animate-faixa,

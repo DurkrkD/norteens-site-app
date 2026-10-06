@@ -28,11 +28,14 @@ export default function FaixaNovidade() {
 
   return (
     <div className="relative bg-[#0f2e26] text-[#f8f0e6]">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 pr-12 py-2.5 flex items-center justify-center gap-x-3 gap-y-1 flex-wrap text-[13px] text-center">
-        <span className="px-2 py-0.5 rounded-full bg-highlight text-[#0f2e26] text-[10px] font-bold uppercase tracking-[0.1em]">Novo</span>
-        <span className="text-[#f8f0e6]/85">{texto}</span>
-        <Link to="/planos" className="group inline-flex items-center gap-1 font-semibold text-highlight hover:text-white transition-colors">
-          Entrar na lista <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pr-12 py-2.5 flex items-center justify-center gap-x-3 gap-y-1 text-[13px] text-center">
+        <span className="hidden sm:inline px-2 py-0.5 rounded-full bg-highlight text-[#0f2e26] text-[10px] font-bold uppercase tracking-[0.1em]">Novo</span>
+        {/* no celular, a frase curta cabe numa linha só */}
+        <span className="sm:hidden text-[#f8f0e6]/85 truncate">Em breve: DISC completo e mentoria</span>
+        <span className="hidden sm:inline text-[#f8f0e6]/85">{texto}</span>
+        <Link to="/planos" className="group inline-flex items-center gap-1 font-semibold text-highlight hover:text-white transition-colors shrink-0">
+          <span className="sm:hidden">Ver</span><span className="hidden sm:inline">Entrar na lista</span>
+          <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
         </Link>
       </div>
       <button

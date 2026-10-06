@@ -1,4 +1,5 @@
 import React from "react";
+import Contador from "@/components/Contador";
 
 // Faixa de números — todos reais (contados no banco ou fixos do teste), nada inventado.
 export default function Numeros({ profissoes, famosos }) {
@@ -16,7 +17,7 @@ export default function Numeros({ profissoes, famosos }) {
           {itens.map((i, idx) => (
             <div key={i.label} className={`py-8 px-4 text-center ${idx >= 2 ? "border-t lg:border-t-0 border-border" : ""}`}>
               <dt className="sr-only">{i.label}</dt>
-              <dd className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-foreground tabular-nums">{i.valor}</dd>
+              <dd className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-foreground tabular-nums"><Contador valor={i.valor} /></dd>
               <dd className="mt-1 text-sm text-muted-foreground">{i.label}</dd>
             </div>
           ))}

@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { Sparkles, ArrowUpRight } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import { Sparkles, Shuffle } from "lucide-react";
+import { motion, LayoutGroup } from "framer-motion";
 import { norteens } from "@/api/norteensClient";
 import { PageLoading, EmptyState } from "@/components/layout/Page";
+import CartaFamoso from "@/components/famosos/CartaFamoso";
 
-const CORES_AVATAR = [
-  "from-accent/25 to-accent/10 text-accent",
-  "from-secondary/25 to-secondary/10 text-secondary",
-  "from-highlight/35 to-highlight/10 text-[#8a5a12]",
-];
-
-const iniciais = (nome = "") =>
-  nome.split(" ").filter(Boolean).slice(0, 2).map((p) => p[0]).join("").toUpperCase();
+// Fisher–Yates: cada ordem tem a mesma chance
+function embaralhada(lista) {
+  const l = [...lista];
+  for (let i = l.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [l[i], l[j]] = [l[j], l[i]];
+  }
+  return l;
+}
 
 export default function Famosos() {
   const [famosos, setFamosos] = useState([]);
@@ -38,6 +41,7 @@ export default function Famosos() {
     .filter(Boolean)
     .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
   const visiveis = filtro ? famosos.filter((f) => String(f.profissao_id) === filtro) : famosos;
+  const embaralhar = () => setFamosos((l) => embaralhada(l));
 
   const chip = (ativo) =>
     `shrink-0 px-4 h-9 rounded-full text-sm font-medium border transition-colors ${
@@ -55,7 +59,8 @@ export default function Famosos() {
             <span className="font-serif font-normal italic tracking-normal text-accent">lá.</span>
           </h1>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl text-pretty">
-            Pessoas reais que construíram carreira nas profissões que você está explorando.
+            Uma coleção de pessoas reais que construíram carreira nas profissões que você está explorando. Vire as
+            cartas para conhecer cada trajetória.
           </p>
         </div>
       </section>
@@ -87,39 +92,35 @@ export default function Famosos() {
               </div>
             )}
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {visiveis.map((f, i) => {
-                const prof = profissoes[f.profissao_id];
-                return (
-                  <article key={f.id} className="flex flex-col rounded-2xl bg-card border border-border p-6">
-                    <div className="flex items-center gap-4">
-                      <span
-                        className={`w-14 h-14 rounded-2xl bg-gradient-to-br font-heading font-bold text-lg flex items-center justify-center shrink-0 ${
-                          CORES_AVATAR[i % CORES_AVATAR.length]
-                        }`}
-                      >
-                        {iniciais(f.nome)}
-                      </span>
-                      <h2 className="text-lg font-bold text-foreground leading-snug">{f.nome}</h2>
-                    </div>
-                    {f.bio && (
-                      <p className="mt-4 text-[15px] text-muted-foreground leading-relaxed whitespace-pre-line flex-1">{f.bio}</p>
-                    )}
-                    {prof && (
-                      <Link
-                        to={`/profissoes/${prof.id}`}
-                        className="group mt-5 pt-4 border-t border-border flex items-center justify-between gap-2 text-sm font-medium text-foreground hover:text-accent transition-colors"
-                      >
-                        <span className="truncate">
-                          {prof.icone} {prof.nome}
-                        </span>
-                        <ArrowUpRight className="w-4 h-4 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                      </Link>
-                    )}
-                  </article>
-                );
-              })}
+            <div className="flex items-center justify-between gap-4 mb-8">
+              <p className="text-sm text-muted-foreground">
+                <span className="font-semibold text-foreground">{visiveis.length}</span> {visiveis.length === 1 ? "carta" : "cartas"} ·
+                toque em uma para ler a história
+              </p>
+              <button
+                onClick={embaralhar}
+                className="group inline-flex items-center gap-2 h-10 px-4 rounded-full bg-card border border-border text-sm font-semibold text-foreground hover:bg-muted transition-colors shrink-0"
+              >
+                <Shuffle className="w-4 h-4 transition-transform duration-500 group-active:rotate-180" /> Embaralhar
+              </button>
             </div>
+
+            <LayoutGroup>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8 sm:gap-x-6 sm:gap-y-10">
+                {visiveis.map((f, i) => (
+                  // entram "sendo distribuídas", uma depois da outra; ao embaralhar, deslizam para o novo lugar
+                  <motion.div
+                    key={f.id}
+                    layout
+                    initial={{ opacity: 0, y: 40, rotate: i % 2 ? 4 : -4, scale: 0.92 }}
+                    animate={{ opacity: 1, y: 0, rotate: 0, scale: 1 }}
+                    transition={{ type: "spring", stiffness: 140, damping: 18, delay: Math.min(i, 12) * 0.06 }}
+                  >
+                    <CartaFamoso famoso={f} profissao={profissoes[f.profissao_id]} />
+                  </motion.div>
+                ))}
+              </div>
+            </LayoutGroup>
           </>
         )}
       </div>
