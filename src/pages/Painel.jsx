@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { NavLink, Navigate, Link, useOutletContext, useNavigate, useParams } from "react-router-dom";
-import { LayoutDashboard, Briefcase, Sparkles, MessageSquareHeart, ClipboardList, Users, Lock, ArrowLeft } from "lucide-react";
+import { LayoutDashboard, Briefcase, Sparkles, MessageSquareHeart, ClipboardList, Users, Lock, ArrowLeft, Gem } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageContainer, EmptyState } from "@/components/layout/Page";
 import { PapelBadge } from "@/components/layout/Navbar";
@@ -11,6 +11,7 @@ import PainelFamosos from "@/components/painel/PainelFamosos";
 import PainelFeedbacks from "@/components/painel/PainelFeedbacks";
 import PainelPerguntas from "@/components/painel/PainelPerguntas";
 import PainelUsuarios from "@/components/painel/PainelUsuarios";
+import PainelOfertas from "@/components/painel/PainelOfertas";
 
 // Seções do painel. "somenteAdmin" some do menu do ARP (e o backend também recusa).
 const GRUPOS = [
@@ -32,6 +33,11 @@ const GRUPOS = [
   {
     titulo: "Teste",
     itens: [{ id: "perguntas", label: "Perguntas do teste", icon: ClipboardList, Componente: PainelPerguntas }],
+  },
+  {
+    titulo: "Comercial",
+    somenteAdmin: true,
+    itens: [{ id: "ofertas", label: "Ofertas", icon: Gem, Componente: PainelOfertas }],
   },
   {
     titulo: "Administração",

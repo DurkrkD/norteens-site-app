@@ -6,6 +6,7 @@ import Footer from "@/components/layout/Footer";
 import MobileBottomTabs from "@/components/layout/MobileBottomTabs";
 import BarraLateral, { LARGURA_BARRA } from "@/components/layout/BarraLateral";
 import PaineisRapidos from "@/components/layout/PaineisRapidos";
+import FaixaNovidade from "@/components/ofertas/FaixaNovidade";
 import { PageLoading } from "@/components/layout/Page";
 import { norteens } from "@/api/norteensClient";
 import { applyUserColor } from "@/utils/userColor";
@@ -87,6 +88,7 @@ export default function AppLayout() {
         style={{ "--recuo": `${recuo}px` }}
       >
         <Navbar user={user} onBuscar={() => setPainel("busca")} />
+        <FaixaNovidade />
         <main className="flex-1">
           {/* só o conteúdo anima ao trocar de página; barra e menus ficam parados */}
           <motion.div

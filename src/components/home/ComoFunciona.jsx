@@ -1,6 +1,7 @@
 import React from "react";
 import { ClipboardCheck, Compass, Route } from "lucide-react";
 import { CabecalhoSecao } from "@/components/home/Secao";
+import Revelar from "@/components/Revelar";
 
 const PASSOS = [
   {
@@ -24,26 +25,24 @@ export default function ComoFunciona() {
   return (
     <section className="py-24 sm:py-28">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <CabecalhoSecao
-          sobretitulo="Como funciona"
-          titulo="Do autoconhecimento à escolha, em"
-          destaque="três passos."
-        />
+        <Revelar>
+          <CabecalhoSecao sobretitulo="Como funciona" titulo="Do autoconhecimento à escolha, em" destaque="três passos." />
+        </Revelar>
 
-        <ol className="mt-16 grid md:grid-cols-3 gap-6 md:gap-0 relative">
-          {/* linha que liga os passos (desktop) */}
-          <div className="hidden md:block absolute top-6 left-[16.6%] right-[16.6%] h-px bg-gradient-to-r from-border via-accent/40 to-border" />
+        <ol className="mt-16 grid md:grid-cols-3 gap-5">
           {PASSOS.map((p, i) => (
-            <li key={p.titulo} className="relative md:px-8 text-center">
-              <div className="relative mx-auto w-12 h-12 rounded-2xl bg-card border border-border shadow-soft flex items-center justify-center">
-                <p.icon className="w-5 h-5 text-foreground" strokeWidth={1.8} />
-                <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-accent text-white text-[11px] font-bold flex items-center justify-center">
-                  {i + 1}
-                </span>
-              </div>
-              <h3 className="mt-6 text-lg font-bold text-foreground">{p.titulo}</h3>
-              <p className="mt-2 text-muted-foreground leading-relaxed max-w-xs mx-auto">{p.texto}</p>
-            </li>
+            <Revelar as="li" key={p.titulo} atraso={i * 0.1} className="group relative overflow-hidden rounded-[28px] bg-card border border-border p-8 shadow-soft hover:shadow-soft-lg transition-shadow">
+              {/* numeral grande e discreto, no estilo editorial */}
+              <span aria-hidden className="absolute right-6 -bottom-10 font-serif italic text-[10rem] leading-none text-foreground/[0.06] select-none transition-colors duration-500 group-hover:text-accent/15">
+                {i + 1}
+              </span>
+              <span className="relative inline-flex w-12 h-12 rounded-2xl bg-[#0f2e26] dark:bg-white/10 text-[#f8f0e6] items-center justify-center">
+                <p.icon className="w-5 h-5" strokeWidth={1.9} />
+              </span>
+              <p className="relative mt-8 text-xs font-semibold uppercase tracking-[0.16em] text-accent">Passo {i + 1}</p>
+              <h3 className="relative mt-2 text-xl font-bold text-foreground tracking-[-0.01em]">{p.titulo}</h3>
+              <p className="relative mt-3 text-muted-foreground leading-relaxed">{p.texto}</p>
+            </Revelar>
           ))}
         </ol>
       </div>

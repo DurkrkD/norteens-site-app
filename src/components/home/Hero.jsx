@@ -66,7 +66,7 @@ function PreviaProduto() {
       </div>
 
       {/* selo: próximos passos */}
-      <div className="absolute -bottom-14 right-0 sm:-right-4 rounded-2xl bg-card border border-border shadow-soft-lg px-4 py-3 animate-fade-up [animation-delay:240ms]">
+      <div className="absolute -bottom-14 right-0 sm:-right-4 rounded-2xl bg-card border border-border shadow-soft-lg px-4 py-3 animate-flutuar">
         <p className="text-[10px] font-semibold tracking-[0.14em] text-muted-foreground">CARREIRAS PARA EXPLORAR</p>
         <div className="mt-2 flex gap-1.5">
           {["📣 Comunicação", "🧠 Psicologia", "✈️ Turismo"].map((c) => (
@@ -92,7 +92,7 @@ export default function Hero({ user }) {
         <div className="grid lg:grid-cols-[1.05fr_1fr] gap-14 lg:gap-12 items-center">
           <div className="text-center lg:text-left">
             <span className="inline-flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full bg-card border border-border shadow-soft text-xs font-medium text-muted-foreground">
-              <span className="px-2 py-0.5 rounded-full bg-accent/15 text-accent font-semibold">Novo</span>
+              <span className="px-2 py-0.5 rounded-full bg-accent/15 text-accent font-semibold">DISC</span>
               Teste comportamental · 12 perguntas · 3 min
             </span>
 

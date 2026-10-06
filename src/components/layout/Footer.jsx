@@ -10,6 +10,7 @@ const colunas = [
       { to: "/profissoes", label: "Profissões" },
       { to: "/famosos", label: "Famosos" },
       { to: "/comunidade", label: "Comunidade" },
+      { to: "/planos", label: "Planos" },
     ],
   },
   {
@@ -32,7 +33,7 @@ const colunas = [
 
 export default function Footer() {
   return (
-    <footer className="bg-[#0f2e26] text-[#f8f0e6]">
+    <footer className="grao overflow-hidden bg-[#0f2e26] text-[#f8f0e6]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr] py-14">
           <div>
@@ -58,6 +59,13 @@ export default function Footer() {
             </div>
           ))}
         </div>
+        {/* assinatura grande da marca, em serifa, recortada pela borda */}
+        <p
+          aria-hidden
+          className="font-serif italic leading-[0.8] text-[clamp(5rem,17vw,15rem)] tracking-[-0.02em] text-[#f8f0e6]/[0.07] select-none whitespace-nowrap -mb-[0.12em]"
+        >
+          Norteens
+        </p>
         <div
           className="border-t border-white/10 py-5 flex items-center justify-between gap-4 text-[13px] text-[#f8f0e6]/55"
           style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 1.25rem)" }}

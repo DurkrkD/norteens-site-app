@@ -95,12 +95,23 @@ module.exports = {
   			'fade-up': {
   				from: { opacity: '0', transform: 'translateY(10px)' },
   				to: { opacity: '1', transform: 'translateY(0)' }
+  			},
+  			// faixa de carreiras rolando sem fim (o conteúdo vem duplicado: -50% emenda no começo)
+  			faixa: {
+  				from: { transform: 'translateX(0)' },
+  				to: { transform: 'translateX(-50%)' }
+  			},
+  			flutuar: {
+  				'0%, 100%': { transform: 'translateY(0)' },
+  				'50%': { transform: 'translateY(-6px)' }
   			}
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out',
-  			'fade-up': 'fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both'
+  			'fade-up': 'fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both',
+  			faixa: 'faixa 60s linear infinite',
+  			flutuar: 'flutuar 7s ease-in-out infinite'
   		}
   	}
   },

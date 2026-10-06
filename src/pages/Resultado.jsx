@@ -6,6 +6,8 @@ import { norteens } from "@/api/norteensClient";
 import { PageLoading } from "@/components/layout/Page";
 import { marcarMarco } from "@/utils/progresso";
 import { PERFIS, ORDEM_EIXOS } from "@/data/perfis";
+import { useOfertas } from "@/components/ofertas/useOfertas";
+import { OfertaDiscCompacta } from "@/components/ofertas/Cartoes";
 
 // O texto do perfil (server/perfisTeste.js) vem em Markdown:
 // "## Seu perfil: X", um parágrafo de introdução e blocos "**Título**" seguidos de lista ou parágrafo.
@@ -59,6 +61,7 @@ function Lista({ icon: Icon, titulo, itens, cor }) {
 
 export default function Resultado() {
   const { user, setUser } = useOutletContext();
+  const { disc } = useOfertas();
   const navigate = useNavigate();
   const [profissoes, setProfissoes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -210,6 +213,7 @@ export default function Resultado() {
               </span>
             </Link>
           )}
+          <OfertaDiscCompacta oferta={disc} user={user} />
           <Link to="/comunidade" className="group block p-6 rounded-2xl bg-card border border-border hover:border-foreground/15 transition-colors">
             <span className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
               <MessagesSquare className="w-5 h-5 text-foreground" strokeWidth={1.8} />

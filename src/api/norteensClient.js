@@ -459,5 +459,56 @@ export const norteens = {
     const r = await resposta.json();
     if (!resposta.ok) throw new Error(r.erro || 'Erro ao mudar papel');
     return r;
+  },
+
+  // ofertas visíveis: avaliação DISC e planos de mentoria (público)
+  listarOfertas() {
+    return pedido('GET', '/ofertas', { erro: 'Erro ao carregar os planos' });
+  },
+
+  // entra na lista de interesse de uma oferta (não é compra; logado ou não)
+  registrarInteresse(dados) {
+    return pedido('POST', '/interesses', { corpo: dados, erro: 'Não foi possível registrar seu interesse' });
+  },
+
+  // [ADMIN] todas as ofertas, inclusive escondidas, com o total de interessados
+  listarOfertasAdmin() {
+    return pedido('GET', '/ofertas-admin', { erro: 'Erro ao carregar as ofertas' });
+  },
+
+  // [ADMIN] edita uma oferta
+  editarOferta(id, dados) {
+    return pedido('PUT', `/ofertas/${id}`, { corpo: dados, erro: 'Erro ao salvar a oferta' });
+  },
+
+  // [ADMIN] lista de interessados
+  listarInteresses() {
+    return pedido('GET', '/interesses', { erro: 'Erro ao carregar os interessados' });
+  },
+
+  // [ADMIN] marca um interessado como contatado (ou não)
+  marcarContatado(id, contatado) {
+    return pedido('PATCH', `/interesses/${id}`, { corpo: { contatado }, erro: 'Erro ao atualizar' });
+  },
+
+  // [ADMIN] tira alguém da lista de interesse
+  apagarInteresse(id) {
+    return pedido('DELETE', `/interesses/${id}`, { erro: 'Erro ao remover da lista' });
   }
 };
+
+// chamada genérica: manda o token quando houver e transforma o { erro } do servidor em exceção
+async function pedido(metodo, caminho, { corpo, erro } = {}) {
+  const token = localStorage.getItem('token');
+  const headers = {};
+  if (token) headers.Authorization = `Bearer ${token}`;
+  if (corpo !== undefined) headers['Content-Type'] = 'application/json';
+  const resposta = await fetch(`${API_URL}${caminho}`, {
+    method: metodo,
+    headers,
+    body: corpo !== undefined ? JSON.stringify(corpo) : undefined,
+  });
+  const r = await resposta.json().catch(() => ({}));
+  if (!resposta.ok) throw new Error(r.erro || erro || 'Algo deu errado');
+  return r;
+}

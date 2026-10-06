@@ -7,6 +7,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { PageContainer, PageLoading, EmptyState } from "@/components/layout/Page";
 import CardProfissao from "@/components/profissoes/CardProfissao";
 import { isEquipe } from "@/utils/papeis";
+import { useOfertas } from "@/components/ofertas/useOfertas";
+import { ChamadaMentoria } from "@/components/ofertas/Cartoes";
 
 // bloco de conteúdo da ficha: título com ícone + texto, separado por linha
 function Bloco({ icon: Icon, titulo, children }) {
@@ -54,6 +56,7 @@ function Fato({ icon: Icon, rotulo, valor }) {
 export default function ProfissaoDetalhe() {
   const { id } = useParams();
   const { user, setUser } = useOutletContext();
+  const temMentoria = useOfertas().mentorias.length > 0;
   const { toast } = useToast();
   const [profissao, setProfissao] = useState(null);
   const [famosos, setFamosos] = useState([]);
@@ -242,6 +245,7 @@ export default function ProfissaoDetalhe() {
               </ul>
             </div>
           )}
+          {temMentoria && <ChamadaMentoria />}
         </aside>
       </div>
 

@@ -1,4 +1,4 @@
-import { Home, ClipboardCheck, BarChart3, Briefcase, Star, MessagesSquare } from "lucide-react";
+import { Home, ClipboardCheck, BarChart3, Briefcase, Star, MessagesSquare, Gem } from "lucide-react";
 
 // Destinos principais do site — a barra lateral (computador) e o menu do celular usam a mesma lista.
 export function destinosPrincipais(user) {
@@ -10,6 +10,7 @@ export function destinosPrincipais(user) {
     { to: "/profissoes", label: "Profissões", icon: Briefcase },
     { to: "/famosos", label: "Famosos", icon: Star },
     { to: "/comunidade", label: "Comunidade", icon: MessagesSquare },
+    { to: "/planos", label: "Planos", icon: Gem, novo: true },
   ];
 }
 

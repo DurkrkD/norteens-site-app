@@ -13,7 +13,7 @@ export default function ChamadaFinal({ user }) {
   return (
     <section className="pb-24 sm:pb-28">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="relative overflow-hidden rounded-[32px] bg-[#0f2e26] px-8 sm:px-14 py-14 sm:py-16">
+        <div className="grao relative overflow-hidden rounded-[32px] bg-[#0f2e26] px-8 sm:px-14 py-14 sm:py-16">
           <div className="absolute -right-24 -top-24 w-80 h-80 rounded-full bg-accent/25 blur-3xl" />
           <div className="absolute right-40 -bottom-32 w-72 h-72 rounded-full bg-highlight/15 blur-3xl" />
 

@@ -74,7 +74,7 @@ export default function BarraLateral({ user, expandida, onAlternar, painel, onPa
 
         <nav className="flex-1 overflow-y-auto overflow-x-hidden py-1 space-y-1 [scrollbar-width:none]">
           {destinosPrincipais(user).map((d) => (
-            <Item key={d.to} {...d} ativo={estaAtivo(pathname, d)} expandida={expandida} />
+            <Item key={d.to} {...d} ativo={estaAtivo(pathname, d)} expandida={expandida} selo={d.novo ? "Novo" : undefined} />
           ))}
 
           <Divisoria expandida={expandida} titulo={equipe ? "Equipe" : "Atalhos"} />

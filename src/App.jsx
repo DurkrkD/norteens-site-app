@@ -8,6 +8,7 @@ import {
   Routes,
 } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
+import { MotionConfig } from "framer-motion";
 import PageNotFound from "./lib/PageNotFound";
 import { AuthProvider, useAuth } from "@/lib/AuthContext";
 import ScrollToTop from "./components/ScrollToTop";
@@ -24,6 +25,7 @@ import Home from "@/pages/Home";
 import Profissoes from "@/pages/Profissoes";
 import ProfissaoDetalhe from "@/pages/ProfissaoDetalhe";
 import Famosos from "@/pages/Famosos";
+import Planos from "@/pages/Planos";
 import Teste from "@/pages/Teste";
 import Resultado from "@/pages/Resultado";
 import Comunidade from "@/pages/Comunidade";
@@ -47,6 +49,7 @@ const AppRoutes = () => {
         <Route path="/profissoes" element={<Profissoes />} />
         <Route path="/profissoes/:id" element={<ProfissaoDetalhe />} />
         <Route path="/famosos" element={<Famosos />} />
+        <Route path="/planos" element={<Planos />} />
         <Route path="/comunidade" element={<Comunidade />} />
         <Route path="/teste" element={<Teste />} />
         <Route path="/resultado" element={<Resultado />} />
@@ -80,15 +83,18 @@ const AuthenticatedApp = () => {
 function App() {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <AuthProvider>
-        <QueryClientProvider client={queryClientInstance}>
-          <Router>
-            <ScrollToTop />
-            <AuthenticatedApp />
-          </Router>
-          <Toaster />
-        </QueryClientProvider>
-      </AuthProvider>
+      {/* respeita "reduzir movimento" do sistema em todas as animações do framer-motion */}
+      <MotionConfig reducedMotion="user">
+        <AuthProvider>
+          <QueryClientProvider client={queryClientInstance}>
+            <Router>
+              <ScrollToTop />
+              <AuthenticatedApp />
+            </Router>
+            <Toaster />
+          </QueryClientProvider>
+        </AuthProvider>
+      </MotionConfig>
     </ThemeProvider>
   );
 }
