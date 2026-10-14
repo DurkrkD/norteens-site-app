@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useOutletContext, useNavigate, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
-import { ArrowRight, CheckCircle2, TrendingUp, Check, Briefcase, MessagesSquare, Info } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { ArrowRight, ArrowUpRight, CheckCircle2, Briefcase, MessagesSquare, Info } from "lucide-react";
 import { norteens } from "@/api/norteensClient";
 import { PageLoading } from "@/components/layout/Page";
 import { marcarMarco } from "@/utils/progresso";
@@ -9,6 +10,10 @@ import { PERFIS, ORDEM_EIXOS } from "@/data/perfis";
 import { useOfertas } from "@/components/ofertas/useOfertas";
 import { OfertaDiscCompacta } from "@/components/ofertas/Cartoes";
 import TituloRevelado from "@/components/TituloRevelado";
+import Revelar, { Cascata, ItemCascata } from "@/components/Revelar";
+import Contador from "@/components/Contador";
+import Parallax from "@/components/Parallax";
+import { EASE_SAIDA, useCelular } from "@/lib/movimento";
 
 // O texto do perfil (server/perfisTeste.js) vem em Markdown:
 // "## Seu perfil: X", um parágrafo de introdução e blocos "**Título**" seguidos de lista ou parágrafo.
@@ -39,23 +44,127 @@ const markdown = {
   h3: ({ children }) => <h3 className="text-lg font-bold text-foreground mt-6 mb-2">{children}</h3>,
 };
 
-function Lista({ icon: Icon, titulo, itens, cor }) {
+const normalizar = (s) => (s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+const palavras = (s) => (s || "").split(/[^\p{L}]+/u).filter((w) => w.length >= 5);
+
+// Leva o cartão da carreira para a busca de profissões. A recomendação fala da área ("Psicologia",
+// "Jornalismo") e o cadastro, da profissão ("Psicólogo", "Jornalista"): compara pelo radical (6 letras)
+// e busca pela palavra como ela aparece no nome da profissão (nas descrições casaria com qualquer
+// "público" ou "comunicar"). Sem nenhuma profissão parecida, o cartão fica sem link.
+function buscaDaCarreira(carreira, profissoes) {
+  const radicais = palavras(carreira).map((w) => normalizar(w).slice(0, 6));
+  for (const p of profissoes) {
+    const achada = palavras(p.nome).find((w) => radicais.some((r) => normalizar(w).startsWith(r)));
+    if (achada) return achada;
+  }
+  return null;
+}
+
+// barra de um traço: cresce do zero e a porcentagem conta junto quando aparece na tela
+function BarraTraco({ eixo, valor, dominante, ordem }) {
+  const reduzir = useReducedMotion();
+  const celular = useCelular();
+  const p = PERFIS[eixo];
   return (
-    <section className="rounded-2xl bg-card border border-border p-6">
-      <h2 className="flex items-center gap-2.5 text-lg font-bold text-foreground">
-        <span className={`w-8 h-8 rounded-lg flex items-center justify-center ${cor}`}>
-          <Icon className="w-4 h-4" />
+    <div>
+      <div className="flex items-baseline justify-between">
+        <span className={`text-sm font-semibold ${dominante ? "text-[#f8f0e6]" : "text-[#f8f0e6]/70"}`}>
+          {p.traco}
+          <span className="ml-2 text-xs font-normal text-[#f8f0e6]/50">{p.nome}</span>
         </span>
-        {titulo}
-      </h2>
-      <ul className="mt-5 space-y-3">
-        {itens.map((i) => (
-          <li key={i} className="flex gap-3 text-[15px] text-foreground/85 leading-snug">
-            <Check className="w-4 h-4 mt-0.5 shrink-0 text-muted-foreground" />
-            {i}
-          </li>
-        ))}
-      </ul>
+        <span className="text-sm font-semibold tabular-nums">
+          <Contador valor={valor} duracao={celular ? 700 : 1100} />%
+        </span>
+      </div>
+      <div className="mt-2 h-2.5 rounded-full bg-white/10 overflow-hidden">
+        {reduzir ? (
+          <div className={`h-full rounded-full ${p.cor}`} style={{ width: `${valor}%` }} />
+        ) : (
+          <motion.div
+            className={`h-full rounded-full origin-left ${p.cor}`}
+            style={{ width: `${valor}%` }}
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: celular ? 0.7 : 1.1, ease: EASE_SAIDA, delay: 0.3 + ordem * (celular ? 0.06 : 0.12) }}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+// pontos fortes e pontos para desenvolver em abas: uma lista por vez, em vez de duas lado a lado
+function DoisLados({ fortes, desenvolver }) {
+  const reduzir = useReducedMotion();
+  const abas = [
+    fortes.length > 0 && { id: "fortes", rotulo: "Pontos fortes", itens: fortes },
+    desenvolver.length > 0 && { id: "desenvolver", rotulo: "Para desenvolver", itens: desenvolver },
+  ].filter(Boolean);
+  const [aba, setAba] = useState(abas[0]?.id);
+  const atual = abas.find((a) => a.id === aba) || abas[0];
+  if (!atual) return null;
+
+  const lista = (
+    <ol className="divide-y divide-border border-y border-border">
+      {atual.itens.map((item, i) => (
+        <motion.li
+          key={item}
+          className="flex gap-5 sm:gap-8 py-5 sm:py-6"
+          initial={reduzir ? false : { opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: EASE_SAIDA, delay: i * 0.06 }}
+        >
+          <span className="font-serif italic text-2xl sm:text-3xl leading-none text-accent tabular-nums w-8 shrink-0">
+            {String(i + 1).padStart(2, "0")}
+          </span>
+          <span className="text-lg sm:text-xl text-foreground leading-snug text-pretty">{item}</span>
+        </motion.li>
+      ))}
+    </ol>
+  );
+
+  return (
+    <section className="max-w-3xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
+      <TituloRevelado as="h2" aoRolar className="text-3xl sm:text-[2.6rem] leading-[1.1] font-bold tracking-[-0.025em] text-foreground text-balance">
+        Onde você brilha e <span className="font-serif font-normal italic tracking-normal text-accent">onde crescer.</span>
+      </TituloRevelado>
+
+      {abas.length > 1 && (
+        <Revelar atraso={0.15} className="mt-8">
+          <div role="tablist" aria-label="Pontos fortes e pontos para desenvolver" className="inline-flex p-1 rounded-full bg-muted">
+            {abas.map((a) => (
+              <button
+                key={a.id}
+                role="tab"
+                aria-selected={a.id === atual.id}
+                onClick={() => setAba(a.id)}
+                className={`relative h-10 px-5 rounded-full text-sm font-semibold transition-colors ${
+                  a.id === atual.id ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {a.id === atual.id && (
+                  <motion.span layoutId="aba-resultado" className="absolute inset-0 rounded-full bg-primary" transition={{ type: "spring", bounce: 0.2, duration: 0.5 }} />
+                )}
+                <span className="relative">
+                  {a.rotulo} <span className="opacity-60 tabular-nums">{a.itens.length}</span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </Revelar>
+      )}
+
+      <Revelar atraso={0.2} className="mt-8">
+        {reduzir ? lista : (
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div key={atual.id} exit={{ opacity: 0, transition: { duration: 0.15 } }}>
+              {lista}
+            </motion.div>
+          </AnimatePresence>
+        )}
+      </Revelar>
     </section>
   );
 }
@@ -93,16 +202,26 @@ export default function Resultado() {
 
   return (
     <div>
-      {/* destaque do perfil */}
-      <section className="relative overflow-hidden bg-[#0f2e26] text-[#f8f0e6]">
+      {/* abertura: o perfil em destaque e os quatro traços */}
+      <section className="grao relative overflow-hidden bg-[#0f2e26] text-[#f8f0e6]">
         <div className="absolute -right-32 -top-32 w-[28rem] h-[28rem] rounded-full bg-accent/20 blur-3xl" />
         <div className="absolute left-1/3 -bottom-40 w-96 h-96 rounded-full bg-highlight/10 blur-3xl" />
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-20 grid lg:grid-cols-[1.3fr_1fr] gap-12 items-center">
+        {/* a letra do perfil, gigante ao fundo; fica para trás na rolagem */}
+        {eixo && (
+          <Parallax
+            velocidade={-0.12}
+            aria-hidden="true"
+            className="absolute -right-6 sm:right-[4%] -bottom-[0.28em] font-serif italic leading-none text-[16rem] sm:text-[24rem] lg:text-[30rem] text-[#f8f0e6]/[0.05] select-none pointer-events-none"
+          >
+            {eixo}
+          </Parallax>
+        )}
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24 grid lg:grid-cols-[1.3fr_1fr] gap-12 items-center">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#f8f0e6]/60">
+            <Revelar as="p" className="text-xs font-semibold uppercase tracking-[0.16em] text-[#f8f0e6]/60">
               {primeiroNome ? `${primeiroNome}, seu perfil é` : "Seu perfil é"}
-            </p>
-            <TituloRevelado className="mt-4 text-5xl sm:text-7xl font-bold tracking-[-0.035em] leading-[0.95]">
+            </Revelar>
+            <TituloRevelado className="mt-4 text-[3.4rem] sm:text-7xl lg:text-8xl font-bold tracking-[-0.035em] leading-[0.95]">
               {r.perfil ? (
                 <span className="font-serif font-normal italic tracking-normal text-highlight">{r.perfil}</span>
               ) : (
@@ -110,123 +229,160 @@ export default function Resultado() {
               )}
             </TituloRevelado>
             {eixo && (
-              <p className="mt-5 text-xl text-[#f8f0e6]/85 max-w-lg">{PERFIS[eixo].resumo}</p>
+              <Revelar as="p" atraso={0.35} className="mt-6 text-xl sm:text-2xl text-[#f8f0e6]/85 max-w-lg text-pretty">
+                {PERFIS[eixo].resumo}
+              </Revelar>
             )}
             {eixo && (
-              <span className="mt-6 inline-flex items-center gap-2 h-9 px-4 rounded-full bg-white/10 text-sm font-medium">
-                Traço dominante: <strong className="font-semibold">{PERFIS[eixo].traco}</strong>
-              </span>
+              <Revelar atraso={0.45} className="mt-7">
+                <span className="inline-flex items-center gap-2 h-9 px-4 rounded-full bg-white/10 text-sm font-medium">
+                  Traço dominante: <strong className="font-semibold">{PERFIS[eixo].traco}</strong>
+                </span>
+              </Revelar>
             )}
           </div>
 
           {pontuacao && (
-            <div className="rounded-3xl bg-white/[0.06] border border-white/10 p-6 sm:p-7 backdrop-blur">
+            <Revelar atraso={0.2} className="rounded-3xl bg-white/[0.06] border border-white/10 p-6 sm:p-7 backdrop-blur">
               <p className="text-sm font-semibold text-[#f8f0e6]">Seus quatro traços</p>
               <div className="mt-6 space-y-5">
-                {ORDEM_EIXOS.map((e) => (
-                  <div key={e}>
-                    <div className="flex items-baseline justify-between">
-                      <span className={`text-sm font-semibold ${e === eixo ? "text-[#f8f0e6]" : "text-[#f8f0e6]/70"}`}>
-                        {PERFIS[e].traco}
-                        <span className="ml-2 text-xs font-normal text-[#f8f0e6]/50">{PERFIS[e].nome}</span>
-                      </span>
-                      <span className="text-sm font-semibold tabular-nums">{pontuacao[e]}%</span>
-                    </div>
-                    <div className="mt-2 h-2.5 rounded-full bg-white/10 overflow-hidden">
-                      <div className={`h-full rounded-full ${PERFIS[e].cor}`} style={{ width: `${pontuacao[e]}%` }} />
-                    </div>
-                  </div>
+                {ORDEM_EIXOS.map((e, i) => (
+                  <BarraTraco key={e} eixo={e} valor={pontuacao[e]} dominante={e === eixo} ordem={i} />
                 ))}
               </div>
-            </div>
+            </Revelar>
           )}
         </div>
       </section>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 grid lg:grid-cols-[1fr_320px] gap-10 items-start">
-        <div className="min-w-0 space-y-6">
-          {r.entendeu ? (
-            <>
-              {r.intro && <p className="text-xl text-foreground leading-relaxed text-pretty">{r.intro}</p>}
-              <div className="grid md:grid-cols-2 gap-5">
-                {r.fortes.length > 0 && (
-                  <Lista icon={CheckCircle2} titulo="Pontos fortes" itens={r.fortes} cor="bg-secondary/15 text-secondary" />
-                )}
-                {r.desenvolver.length > 0 && (
-                  <Lista icon={TrendingUp} titulo="Para desenvolver" itens={r.desenvolver} cor="bg-highlight/25 text-[#8a5a12]" />
-                )}
-              </div>
-              {r.estilo && (
-                <section className="rounded-2xl bg-cream-2 border border-border p-6 sm:p-8">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Estilo de trabalho preferido</p>
-                  <p className="mt-3 text-lg text-foreground leading-relaxed text-pretty">{r.estilo}</p>
-                </section>
-              )}
-              {r.carreiras.length > 0 && (
-                <section className="rounded-2xl bg-card border border-border p-6">
-                  <h2 className="flex items-center gap-2.5 text-lg font-bold text-foreground">
-                    <span className="w-8 h-8 rounded-lg bg-accent/15 text-accent flex items-center justify-center">
-                      <Briefcase className="w-4 h-4" />
-                    </span>
-                    Carreiras que combinam com você
-                  </h2>
-                  <ul className="mt-5 flex flex-wrap gap-2">
-                    {r.carreiras.map((c) => (
-                      <li key={c} className="px-3.5 py-2 rounded-xl bg-muted text-sm font-medium text-foreground">{c}</li>
-                    ))}
-                  </ul>
-                </section>
-              )}
-            </>
-          ) : (
-            <article className="rounded-2xl bg-card border border-border p-6 sm:p-8">
-              <ReactMarkdown components={markdown}>{user.perfil_resultado || ""}</ReactMarkdown>
-            </article>
+      {r.entendeu ? (
+        <>
+          {/* a introdução sozinha, em destaque */}
+          {r.intro && (
+            <section className="max-w-3xl mx-auto px-4 sm:px-6 pt-20 sm:pt-28">
+              <Revelar as="p" className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Em poucas palavras</Revelar>
+              <Revelar as="p" atraso={0.1} className="mt-5 font-heading text-2xl sm:text-[2rem] leading-[1.35] font-medium tracking-[-0.015em] text-foreground text-pretty">
+                {r.intro}
+              </Revelar>
+            </section>
           )}
 
-          <p className="flex items-start gap-2 text-xs text-muted-foreground">
+          <DoisLados fortes={r.fortes} desenvolver={r.desenvolver} />
+
+          {r.estilo && (
+            <section className="bg-cream-2/70 border-y border-border">
+              <div className="max-w-4xl mx-auto px-4 sm:px-6 py-20 sm:py-24 text-center">
+                <Revelar as="p" className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Onde você rende mais</Revelar>
+                <Revelar as="blockquote" atraso={0.1} className="mt-6 font-serif italic text-[1.7rem] sm:text-[2.4rem] leading-[1.25] text-foreground text-balance">
+                  “{r.estilo}”
+                </Revelar>
+              </div>
+            </section>
+          )}
+
+          {r.carreiras.length > 0 && (
+            <section className="max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
+              <TituloRevelado as="h2" aoRolar className="max-w-2xl text-3xl sm:text-[2.6rem] leading-[1.1] font-bold tracking-[-0.025em] text-foreground text-balance">
+                Carreiras que combinam <span className="font-serif font-normal italic tracking-normal text-accent">com você.</span>
+              </TituloRevelado>
+              <Cascata as="ol" className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {r.carreiras.map((c, i) => {
+                  const busca = buscaDaCarreira(c, profissoes);
+                  const conteudo = (
+                    <>
+                      <span className="font-serif italic text-xl text-accent tabular-nums">{String(i + 1).padStart(2, "0")}</span>
+                      <span className="mt-6 block font-heading text-lg font-bold text-foreground leading-snug">{c}</span>
+                      {busca && (
+                        <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-secondary">
+                          <span className="sublinhado">Ver profissões</span> <ArrowUpRight className="w-4 h-4" />
+                        </span>
+                      )}
+                    </>
+                  );
+                  return (
+                    <ItemCascata as="li" key={c} className="flex">
+                      {busca ? (
+                        <Link
+                          to={`/profissoes?q=${encodeURIComponent(busca)}`}
+                          className="group flex-1 flex flex-col p-6 rounded-2xl bg-card border border-border transition-all hover:-translate-y-0.5 hover:shadow-soft-lg"
+                        >
+                          {conteudo}
+                        </Link>
+                      ) : (
+                        <div className="flex-1 flex flex-col p-6 rounded-2xl bg-card border border-border">{conteudo}</div>
+                      )}
+                    </ItemCascata>
+                  );
+                })}
+              </Cascata>
+            </section>
+          )}
+        </>
+      ) : (
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16">
+          <article className="rounded-2xl bg-card border border-border p-6 sm:p-8">
+            <ReactMarkdown components={markdown}>{user.perfil_resultado || ""}</ReactMarkdown>
+          </article>
+        </div>
+      )}
+
+      {/* próximos passos: no fim da leitura, não disputando espaço com ela */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-20 sm:pb-24">
+        <div className="pt-16 border-t border-border">
+          <TituloRevelado as="h2" aoRolar className="text-3xl sm:text-[2.6rem] leading-[1.1] font-bold tracking-[-0.025em] text-foreground">
+            E <span className="font-serif font-normal italic tracking-normal text-accent">agora?</span>
+          </TituloRevelado>
+          <Cascata className="mt-10 grid md:grid-cols-3 gap-5">
+            <ItemCascata className="flex">
+              {escolhida ? (
+                <Link to={`/profissoes/${escolhida.id}`} className="group flex-1 block p-6 rounded-2xl bg-secondary/10 border border-secondary/20">
+                  <CheckCircle2 className="w-6 h-6 text-secondary" />
+                  <p className="mt-3 text-sm text-muted-foreground">Sua profissão escolhida</p>
+                  <p className="font-heading text-lg font-bold text-foreground group-hover:text-accent transition-colors">
+                    {escolhida.icone} {escolhida.nome}
+                  </p>
+                </Link>
+              ) : (
+                <Link to="/profissoes" className="group flex-1 block p-6 rounded-2xl bg-card border border-border shadow-soft-lg hover:border-foreground/15 transition-colors">
+                  <span className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
+                    <Briefcase className="w-5 h-5 text-foreground" strokeWidth={1.8} />
+                  </span>
+                  <p className="mt-4 font-heading text-lg font-bold text-foreground">Escolha uma profissão</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Explore as profissões com esse perfil em mente e escolha a que mais combina com você.
+                  </p>
+                  <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-foreground">
+                    <span className="sublinhado">Explorar profissões</span> <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                  </span>
+                </Link>
+              )}
+            </ItemCascata>
+            {disc && (
+              <ItemCascata className="flex [&>div]:flex-1">
+                <OfertaDiscCompacta oferta={disc} user={user} />
+              </ItemCascata>
+            )}
+            <ItemCascata className="flex">
+              <Link to="/comunidade" className="group flex-1 block p-6 rounded-2xl bg-card border border-border hover:border-foreground/15 transition-colors">
+                <span className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
+                  <MessagesSquare className="w-5 h-5 text-foreground" strokeWidth={1.8} />
+                </span>
+                <p className="mt-4 font-heading text-lg font-bold text-foreground">Converse com quem entende</p>
+                <p className="mt-1 text-sm text-muted-foreground">Conte seu resultado na comunidade e troque ideias.</p>
+                <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-foreground">
+                  <span className="sublinhado">Ir para a comunidade</span> <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                </span>
+              </Link>
+            </ItemCascata>
+          </Cascata>
+
+          <p className="mt-12 flex items-start gap-2 text-xs text-muted-foreground max-w-2xl">
             <Info className="w-4 h-4 shrink-0" />
             Resultado inspirado no modelo DISC. Use como ponto de partida para se conhecer, não como uma regra sobre o
             que você pode ou não fazer.
           </p>
         </div>
-
-        <aside className="space-y-5 lg:sticky lg:top-8">
-          {escolhida ? (
-            <Link to={`/profissoes/${escolhida.id}`} className="group block p-6 rounded-2xl bg-secondary/10 border border-secondary/20">
-              <CheckCircle2 className="w-6 h-6 text-secondary" />
-              <p className="mt-3 text-sm text-muted-foreground">Sua profissão escolhida</p>
-              <p className="font-heading text-lg font-bold text-foreground group-hover:text-accent transition-colors">
-                {escolhida.icone} {escolhida.nome}
-              </p>
-            </Link>
-          ) : (
-            <Link to="/profissoes" className="group block p-6 rounded-2xl bg-card border border-border shadow-soft-lg hover:border-foreground/15 transition-colors">
-              <span className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
-                <Briefcase className="w-5 h-5 text-foreground" strokeWidth={1.8} />
-              </span>
-              <p className="mt-4 font-heading text-lg font-bold text-foreground">Próximo passo</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Explore as profissões com esse perfil em mente e escolha a que mais combina com você.
-              </p>
-              <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-foreground">
-                Explorar profissões <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-              </span>
-            </Link>
-          )}
-          <OfertaDiscCompacta oferta={disc} user={user} />
-          <Link to="/comunidade" className="group block p-6 rounded-2xl bg-card border border-border hover:border-foreground/15 transition-colors">
-            <span className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
-              <MessagesSquare className="w-5 h-5 text-foreground" strokeWidth={1.8} />
-            </span>
-            <p className="mt-4 font-heading text-lg font-bold text-foreground">Converse com quem entende</p>
-            <p className="mt-1 text-sm text-muted-foreground">Conte seu resultado na comunidade e troque ideias.</p>
-            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-foreground">
-              Ir para a comunidade <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-            </span>
-          </Link>
-        </aside>
-      </div>
+      </section>
     </div>
   );
 }
