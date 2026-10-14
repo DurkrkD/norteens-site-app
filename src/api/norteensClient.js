@@ -494,6 +494,46 @@ export const norteens = {
   // [ADMIN] tira alguém da lista de interesse
   apagarInteresse(id) {
     return pedido('DELETE', `/interesses/${id}`, { erro: 'Erro ao remover da lista' });
+  },
+
+  // conteúdos publicados (público), com filtros opcionais { tipo, area }.
+  // A lista não traz o link do arquivo; ele só vem no detalhe, e só de conteúdo gratuito.
+  listarConteudos({ tipo, area } = {}) {
+    const busca = new URLSearchParams();
+    if (tipo) busca.set('tipo', tipo);
+    if (area) busca.set('area', area);
+    const sufixo = busca.toString() ? `?${busca}` : '';
+    return pedido('GET', `/conteudos${sufixo}`, { erro: 'Erro ao carregar os conteúdos' });
+  },
+
+  // um conteúdo publicado (público)
+  getConteudo(id) {
+    return pedido('GET', `/conteudos/${id}`, { erro: 'Conteúdo não encontrado' });
+  },
+
+  // [EQUIPE] todos os conteúdos, inclusive rascunhos, com os links
+  listarConteudosAdmin() {
+    return pedido('GET', '/conteudos-admin', { erro: 'Erro ao carregar os conteúdos' });
+  },
+
+  // [EQUIPE] cadastra um conteúdo
+  criarConteudo(dados) {
+    return pedido('POST', '/conteudos', { corpo: dados, erro: 'Erro ao salvar o conteúdo' });
+  },
+
+  // [EQUIPE] edita um conteúdo
+  editarConteudo(id, dados) {
+    return pedido('PUT', `/conteudos/${id}`, { corpo: dados, erro: 'Erro ao salvar o conteúdo' });
+  },
+
+  // [EQUIPE] publica ou tira do ar
+  publicarConteudo(id, publicado) {
+    return pedido('PATCH', `/conteudos/${id}/publicado`, { corpo: { publicado }, erro: 'Erro ao mudar a publicação' });
+  },
+
+  // [EQUIPE] apaga um conteúdo
+  apagarConteudo(id) {
+    return pedido('DELETE', `/conteudos/${id}`, { erro: 'Erro ao apagar o conteúdo' });
   }
 };
 
