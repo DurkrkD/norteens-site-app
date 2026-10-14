@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Check, Sparkles } from "lucide-react";
 import { PERFIS, ORDEM_EIXOS } from "@/data/perfis";
+import TituloRevelado from "@/components/TituloRevelado";
 
 // valores ilustrativos da prévia do resultado (não é dado de ninguém)
 const EXEMPLO = { D: 38, I: 84, S: 61, C: 47 };
@@ -96,11 +97,11 @@ export default function Hero({ user }) {
               Teste comportamental · 12 perguntas · 3 min
             </span>
 
-            <h1 className="mt-6 text-[2.6rem] leading-[1.05] sm:text-6xl lg:text-[4.1rem] font-bold tracking-[-0.03em] text-foreground text-balance">
+            <TituloRevelado className="mt-6 text-[2.6rem] leading-[1.05] sm:text-6xl lg:text-[4.1rem] font-bold tracking-[-0.03em] text-foreground text-balance">
               Descubra quem você é.{" "}
               <span className="font-serif font-normal italic tracking-normal text-accent">Escolha</span> com
               clareza.
-            </h1>
+            </TituloRevelado>
 
             <p className="mt-6 text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto lg:mx-0 text-pretty">
               A Norteens ajuda jovens a entender o próprio perfil e a conectar isso a profissões reais, com

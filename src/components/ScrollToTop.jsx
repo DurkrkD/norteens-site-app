@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useLocation, useNavigationType } from "react-router-dom";
+import { rolarPara } from "@/lib/rolagem";
 
 const getHashId = (hash) => {
   const rawId = hash.slice(1);
@@ -11,9 +11,10 @@ const getHashId = (hash) => {
   }
 };
 
-export default function ScrollToTop() {
-  const { pathname, hash } = useLocation();
-  const navigationType = useNavigationType();
+// Recebe a página que está sendo exibida (não a do endereço): com a cortina de transição, a troca
+// só acontece com a tela coberta, e é nessa hora que a rolagem volta ao topo.
+export default function ScrollToTop({ location, navigationType }) {
+  const { pathname, hash } = location;
 
   useEffect(() => {
     if (navigationType === "POP") return;
@@ -21,12 +22,12 @@ export default function ScrollToTop() {
     if (hash) {
       const id = getHashId(hash);
       const timer = window.setTimeout(() => {
-        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+        rolarPara(document.getElementById(id));
       }, 50);
       return () => window.clearTimeout(timer);
     }
 
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    rolarPara(0, { imediato: true });
   }, [pathname, hash, navigationType]);
 
   return null;

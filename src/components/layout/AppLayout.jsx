@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import MobileBottomTabs from "@/components/layout/MobileBottomTabs";
@@ -90,15 +89,10 @@ export default function AppLayout() {
         <Navbar user={user} onBuscar={() => setPainel("busca")} />
         <FaixaNovidade />
         <main className="flex-1">
-          {/* só o conteúdo anima ao trocar de página; barra e menus ficam parados */}
-          <motion.div
-            key={location.pathname}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.22, ease: "easeOut" }}
-          >
+          {/* a troca de página anima com a cortina (TransicaoPaginas); a key remonta cada página do zero */}
+          <div key={location.pathname}>
             <Outlet context={{ user, setUser }} />
-          </motion.div>
+          </div>
         </main>
         {!semRodape && <Footer />}
       </div>

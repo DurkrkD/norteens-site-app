@@ -11,7 +11,8 @@ import { ThemeProvider } from "next-themes";
 import { MotionConfig } from "framer-motion";
 import PageNotFound from "./lib/PageNotFound";
 import { AuthProvider, useAuth } from "@/lib/AuthContext";
-import ScrollToTop from "./components/ScrollToTop";
+import TransicaoPaginas from "@/components/TransicaoPaginas";
+import { useRolagemSuave } from "@/lib/rolagem";
 
 // Auth pages
 import Login from "@/pages/Login";
@@ -33,36 +34,40 @@ import Configuracoes from "@/pages/Configuracoes";
 import Feedback from "@/pages/Feedback";
 import Painel from "@/pages/Painel";
 
-// A animação de troca de página fica dentro do AppLayout (só no conteúdo): se envolvesse o layout
-// inteiro, a barra lateral fixa piscaria e recarregaria o usuário a cada clique.
+// A cortina de transição decide qual página está à mostra: as rotas recebem a location dela, que só
+// muda com a tela coberta. O layout não remonta (a barra lateral não pisca nem recarrega o usuário).
 const AppRoutes = () => {
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
+    <TransicaoPaginas>
+      {(location) => (
+        <Routes location={location}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
-      {/* Public + authenticated routes share the layout */}
-      <Route element={<AppLayout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/profissoes" element={<Profissoes />} />
-        <Route path="/profissoes/:id" element={<ProfissaoDetalhe />} />
-        <Route path="/famosos" element={<Famosos />} />
-        <Route path="/planos" element={<Planos />} />
-        <Route path="/comunidade" element={<Comunidade />} />
-        <Route path="/teste" element={<Teste />} />
-        <Route path="/resultado" element={<Resultado />} />
-        <Route path="/configuracoes" element={<Configuracoes />} />
-        <Route path="/feedback" element={<Feedback />} />
-        <Route path="/painel" element={<Painel />} />
-        <Route path="/painel/:secao" element={<Painel />} />
-        {/* endereço antigo da lista de feedbacks */}
-        <Route path="/feedbacks-recebidos" element={<Navigate to="/painel/feedbacks" replace />} />
-      </Route>
+          {/* Public + authenticated routes share the layout */}
+          <Route element={<AppLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/profissoes" element={<Profissoes />} />
+            <Route path="/profissoes/:id" element={<ProfissaoDetalhe />} />
+            <Route path="/famosos" element={<Famosos />} />
+            <Route path="/planos" element={<Planos />} />
+            <Route path="/comunidade" element={<Comunidade />} />
+            <Route path="/teste" element={<Teste />} />
+            <Route path="/resultado" element={<Resultado />} />
+            <Route path="/configuracoes" element={<Configuracoes />} />
+            <Route path="/feedback" element={<Feedback />} />
+            <Route path="/painel" element={<Painel />} />
+            <Route path="/painel/:secao" element={<Painel />} />
+            {/* endereço antigo da lista de feedbacks */}
+            <Route path="/feedbacks-recebidos" element={<Navigate to="/painel/feedbacks" replace />} />
+          </Route>
 
-      <Route path="*" element={<PageNotFound />} />
-    </Routes>
+          <Route path="*" element={<PageNotFound />} />
+        </Routes>
+      )}
+    </TransicaoPaginas>
   );
 };
 
@@ -81,6 +86,8 @@ const AuthenticatedApp = () => {
 };
 
 function App() {
+  useRolagemSuave();
+
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       {/* respeita "reduzir movimento" do sistema em todas as animações do framer-motion */}
@@ -88,7 +95,6 @@ function App() {
         <AuthProvider>
           <QueryClientProvider client={queryClientInstance}>
             <Router>
-              <ScrollToTop />
               <AuthenticatedApp />
             </Router>
             <Toaster />
