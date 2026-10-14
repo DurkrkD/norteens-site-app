@@ -26,6 +26,8 @@ import Home from "@/pages/Home";
 import Profissoes from "@/pages/Profissoes";
 import ProfissaoDetalhe from "@/pages/ProfissaoDetalhe";
 import Famosos from "@/pages/Famosos";
+import Conteudos from "@/pages/Conteudos";
+import ConteudoDetalhe from "@/pages/ConteudoDetalhe";
 import Planos from "@/pages/Planos";
 import Teste from "@/pages/Teste";
 import Resultado from "@/pages/Resultado";
@@ -52,6 +54,8 @@ const AppRoutes = () => {
             <Route path="/profissoes" element={<Profissoes />} />
             <Route path="/profissoes/:id" element={<ProfissaoDetalhe />} />
             <Route path="/famosos" element={<Famosos />} />
+            <Route path="/conteudos" element={<Conteudos />} />
+            <Route path="/conteudos/:id" element={<ConteudoDetalhe />} />
             <Route path="/planos" element={<Planos />} />
             <Route path="/comunidade" element={<Comunidade />} />
             <Route path="/teste" element={<Teste />} />
