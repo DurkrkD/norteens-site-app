@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { NavLink, Navigate, Link, useOutletContext, useNavigate, useParams } from "react-router-dom";
-import { LayoutDashboard, Briefcase, Sparkles, MessageSquareHeart, ClipboardList, Users, Lock, ArrowLeft, Gem } from "lucide-react";
+import { LayoutDashboard, Briefcase, Sparkles, Library, MessageSquareHeart, ClipboardList, Users, Lock, ArrowLeft, Gem } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageContainer, EmptyState } from "@/components/layout/Page";
 import { PapelBadge } from "@/components/layout/Navbar";
@@ -8,6 +8,7 @@ import { isAdmin, isEquipe, PAPEIS } from "@/utils/papeis";
 import PainelVisaoGeral from "@/components/painel/PainelVisaoGeral";
 import PainelProfissoes from "@/components/painel/PainelProfissoes";
 import PainelFamosos from "@/components/painel/PainelFamosos";
+import PainelConteudos from "@/components/painel/PainelConteudos";
 import PainelFeedbacks from "@/components/painel/PainelFeedbacks";
 import PainelPerguntas from "@/components/painel/PainelPerguntas";
 import PainelUsuarios from "@/components/painel/PainelUsuarios";
@@ -24,6 +25,7 @@ const GRUPOS = [
     itens: [
       { id: "profissoes", label: "Profissões", icon: Briefcase, Componente: PainelProfissoes },
       { id: "famosos", label: "Famosos", icon: Sparkles, Componente: PainelFamosos },
+      { id: "conteudos", label: "Conteúdos", icon: Library, Componente: PainelConteudos },
     ],
   },
   {
