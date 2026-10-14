@@ -61,7 +61,13 @@ function buscaDaCarreira(carreira, profissoes) {
   return null;
 }
 
-// barra de um traço: cresce do zero e a porcentagem conta junto quando aparece na tela
+// Cores dos traços sobre o verde-escuro da abertura. As do tema (ex.: o verde de Estabilidade)
+// somem nesse fundo, então aqui cada traço tem uma versão clara própria; a rosca usa as mesmas.
+const COR_NO_ESCURO = { D: "#ee8a69", I: "#f4bd4f", S: "#5fc796", C: "#74afe3" };
+
+// barra de um traço: cresce do zero e a porcentagem conta junto quando aparece na tela.
+// Quem é observado é o trilho (largura cheia): a barra começa com largura zero, e um elemento sem área
+// pode nunca ser dado como visível pelo navegador, deixando a barra vazia.
 function BarraTraco({ eixo, valor, dominante, ordem }) {
   const reduzir = useReducedMotion();
   const celular = useCelular();
@@ -77,20 +83,87 @@ function BarraTraco({ eixo, valor, dominante, ordem }) {
           <Contador valor={valor} duracao={celular ? 700 : 1100} />%
         </span>
       </div>
-      <div className="mt-2 h-2.5 rounded-full bg-white/10 overflow-hidden">
-        {reduzir ? (
-          <div className={`h-full rounded-full ${p.cor}`} style={{ width: `${valor}%` }} />
-        ) : (
-          <motion.div
-            className={`h-full rounded-full origin-left ${p.cor}`}
-            style={{ width: `${valor}%` }}
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: celular ? 0.7 : 1.1, ease: EASE_SAIDA, delay: 0.3 + ordem * (celular ? 0.06 : 0.12) }}
+      <motion.div
+        className="mt-2 h-2.5 rounded-full bg-white/10 overflow-hidden"
+        initial={reduzir ? "visivel" : "oculto"}
+        whileInView="visivel"
+        viewport={{ once: true }}
+      >
+        <motion.div
+          className="h-full rounded-full origin-left"
+          style={{ width: `${valor}%`, backgroundColor: COR_NO_ESCURO[eixo] }}
+          variants={{
+            oculto: { scaleX: 0 },
+            visivel: { scaleX: 1, transition: { duration: celular ? 0.7 : 1.1, ease: EASE_SAIDA, delay: 0.3 + ordem * (celular ? 0.06 : 0.12) } },
+          }}
+        />
+      </motion.div>
+    </div>
+  );
+}
+
+// "Pizza" (rosca) com o peso de cada traço no perfil: as quatro porcentagens divididas pela soma.
+// Cada fatia se desenha em sequência quando a rosca aparece; no centro, o peso do traço dominante.
+function RoscaTracos({ pontuacao, eixo }) {
+  const reduzir = useReducedMotion();
+  const celular = useCelular();
+  const total = ORDEM_EIXOS.reduce((soma, e) => soma + (Number(pontuacao[e]) || 0), 0);
+  if (!total) return null;
+
+  let inicio = 0;
+  const fatias = ORDEM_EIXOS.map((e, i) => {
+    const fracao = (Number(pontuacao[e]) || 0) / total;
+    const fatia = { e, i, inicio, fracao, peso: Math.round(fracao * 100) };
+    inicio += fracao;
+    return fatia;
+  });
+  const dominante = fatias.find((f) => f.e === eixo);
+  const descricao = fatias.map((f) => `${PERFIS[f.e].traco} ${f.peso}%`).join(", ");
+
+  return (
+    <div className="flex items-center gap-5">
+      <motion.svg
+        viewBox="0 0 120 120"
+        className="w-28 h-28 sm:w-32 sm:h-32 shrink-0 -rotate-90"
+        role="img"
+        aria-label={`Peso de cada traço no seu perfil: ${descricao}`}
+        initial={reduzir ? "visivel" : "oculto"}
+        whileInView="visivel"
+        viewport={{ once: true }}
+      >
+        <circle cx="60" cy="60" r="46" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="16" />
+        {fatias.map((f) => (
+          <motion.circle
+            key={f.e}
+            cx="60"
+            cy="60"
+            r="46"
+            fill="none"
+            stroke={COR_NO_ESCURO[f.e]}
+            strokeWidth={f.e === eixo ? 18 : 14}
+            // cada fatia começa onde a anterior terminou; um respiro pequeno separa as fatias
+            transform={`rotate(${f.inicio * 360} 60 60)`}
+            custom={f}
+            variants={{
+              oculto: { pathLength: 0 },
+              visivel: (x) => ({
+                pathLength: Math.max(x.fracao - (x.fracao > 0.03 ? 0.012 : 0), 0),
+                transition: { duration: celular ? 0.5 : 0.8, ease: EASE_SAIDA, delay: 0.35 + x.i * (celular ? 0.1 : 0.18) },
+              }),
+            }}
           />
-        )}
-      </div>
+        ))}
+      </motion.svg>
+      {dominante && (
+        <div className="min-w-0">
+          <p className="font-heading text-4xl sm:text-5xl font-bold tabular-nums leading-none" style={{ color: COR_NO_ESCURO[eixo] }}>
+            <Contador valor={dominante.peso} duracao={celular ? 700 : 1100} />%
+          </p>
+          <p className="mt-2 text-sm text-[#f8f0e6]/70 leading-snug">
+            do seu perfil é <strong className="font-semibold text-[#f8f0e6]">{PERFIS[eixo].traco}</strong>, o traço que mais pesa.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
@@ -245,7 +318,10 @@ export default function Resultado() {
           {pontuacao && (
             <Revelar atraso={0.2} className="rounded-3xl bg-white/[0.06] border border-white/10 p-6 sm:p-7 backdrop-blur">
               <p className="text-sm font-semibold text-[#f8f0e6]">Seus quatro traços</p>
-              <div className="mt-6 space-y-5">
+              <div className="mt-5">
+                <RoscaTracos pontuacao={pontuacao} eixo={eixo} />
+              </div>
+              <div className="mt-6 pt-6 border-t border-white/10 space-y-5">
                 {ORDEM_EIXOS.map((e, i) => (
                   <BarraTraco key={e} eixo={e} valor={pontuacao[e]} dominante={e === eixo} ordem={i} />
                 ))}
