@@ -13,7 +13,6 @@ import PageNotFound from "./lib/PageNotFound";
 import { AuthProvider, useAuth } from "@/lib/AuthContext";
 import TransicaoPaginas from "@/components/TransicaoPaginas";
 import { useRolagemSuave } from "@/lib/rolagem";
-import Cursor from "@/components/Cursor";
 
 // Auth pages
 import Login from "@/pages/Login";
@@ -99,7 +98,6 @@ function App() {
               <AuthenticatedApp />
             </Router>
             <Toaster />
-            <Cursor />
           </QueryClientProvider>
         </AuthProvider>
       </MotionConfig>
