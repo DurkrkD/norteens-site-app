@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { norteens } from "@/api/norteensClient";
 import UserAvatar from "@/components/UserAvatar";
 import { CabecalhoSecao } from "@/components/home/Secao";
+import { Cascata, ItemCascata } from "@/components/Revelar";
 
 // Depoimentos escolhidos pela equipe (só os que o aluno autorizou). Sem nenhum destacado, a seção some.
 export default function TestimonialSection() {
@@ -42,9 +43,9 @@ export default function TestimonialSection() {
     <section className="py-24 sm:py-28">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <CabecalhoSecao sobretitulo="Depoimentos" titulo="Quem já passou" destaque="por aqui." />
-        <div className="mt-14 grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <Cascata className="mt-14 grid md:grid-cols-2 lg:grid-cols-3 gap-5">
           {feedbacks.slice(0, 6).map((f) => (
-            <figure key={f.id} className="flex flex-col rounded-2xl bg-card border border-border p-7">
+            <ItemCascata as="figure" key={f.id} className="flex flex-col rounded-2xl bg-card border border-border p-7">
               <span className="font-serif text-5xl leading-none text-accent/40" aria-hidden="true">“</span>
               <blockquote className="mt-2 text-[17px] text-foreground leading-relaxed flex-1">{f.texto}</blockquote>
               <figcaption className="mt-6 pt-5 border-t border-border flex items-center gap-3">
@@ -54,9 +55,9 @@ export default function TestimonialSection() {
                   <span className="text-xs text-muted-foreground">Usuário Norteens</span>
                 </span>
               </figcaption>
-            </figure>
+            </ItemCascata>
           ))}
-        </div>
+        </Cascata>
       </div>
     </section>
   );

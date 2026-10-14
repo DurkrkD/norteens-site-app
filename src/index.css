@@ -224,3 +224,56 @@
   from { transform: scaleX(1); }
   to { transform: scaleX(0); }
 }
+/* ---------- microinterações (só com mouse; ver Cursor.jsx e Magnetico.jsx) ---------- */
+/* anel que segue o cursor: "difference" deixa ele visível tanto no creme quanto no verde-escuro */
+.cursor-anel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 190;
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  border: 1.5px solid #fff;
+  mix-blend-mode: difference;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1), height 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.3s ease, scale 0.2s ease;
+}
+.cursor-anel[data-estado="clicavel"] {
+  width: 54px;
+  height: 54px;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+.cursor-anel[data-estado="texto"] {
+  scale: 0;
+}
+
+/* sublinhado que cresce da esquerda no hover e sai pela direita; funciona no próprio link ou num
+   <span> dentro de um link com "group" (para não sublinhar o ícone junto) */
+.sublinhado {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  background-position: 100% 100%;
+  transition: background-size 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.sublinhado:focus-visible,
+.group:focus-visible .sublinhado {
+  background-size: 100% 1px;
+  background-position: 0% 100%;
+}
+@media (hover: hover) and (pointer: fine) {
+  .sublinhado:hover,
+  .group:hover .sublinhado {
+    background-size: 100% 1px;
+    background-position: 0% 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sublinhado {
+    transition: none;
+  }
+}

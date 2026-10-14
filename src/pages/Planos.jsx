@@ -7,6 +7,7 @@ import { PageLoading, EmptyState } from "@/components/layout/Page";
 import { useOfertas } from "@/components/ofertas/useOfertas";
 import { DestaqueDisc, CartaoPlano } from "@/components/ofertas/Cartoes";
 import Revelar from "@/components/Revelar";
+import TituloRevelado from "@/components/TituloRevelado";
 
 const PASSOS = [
   { icon: BellRing, titulo: "Entre na lista", texto: "Escolha o que te interessa e deixe seu e-mail. Leva 30 segundos e não tem custo." },
@@ -38,10 +39,10 @@ export default function Planos() {
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-card border border-border shadow-soft text-xs font-medium text-muted-foreground">
             <Sparkles className="w-3.5 h-3.5 text-accent" /> Novidade da Norteens
           </span>
-          <h1 className="mt-6 text-[2.5rem] sm:text-6xl leading-[1.04] font-bold tracking-[-0.035em] text-balance max-w-3xl mx-auto">
+          <TituloRevelado className="mt-6 text-[2.5rem] sm:text-6xl leading-[1.04] font-bold tracking-[-0.035em] text-balance max-w-3xl mx-auto">
             Vá além do teste.{" "}
             <span className="font-serif font-normal italic tracking-normal text-accent">Com quem entende.</span>
-          </h1>
+          </TituloRevelado>
           <p className="mt-5 text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto text-pretty">
             Uma avaliação de perfil mais completa e uma mentoria individual para transformar o que você descobriu em
             um plano de verdade.
@@ -119,7 +120,7 @@ export default function Planos() {
       {!user && (
         <p className="pb-16 -mt-8 text-center text-sm text-muted-foreground">
           Enquanto isso, comece pelo{" "}
-          <Link to="/register" className="font-semibold text-secondary hover:underline">teste de perfil</Link>.
+          <Link to="/register" className="sublinhado font-semibold text-secondary">teste de perfil</Link>.
         </p>
       )}
     </div>

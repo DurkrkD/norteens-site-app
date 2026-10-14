@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, FileBarChart2, Compass, Gift } from "lucide-react";
 import { CabecalhoSecao } from "@/components/home/Secao";
+import { Cascata, ItemCascata } from "@/components/Revelar";
 import { useOfertas } from "@/components/ofertas/useOfertas";
 import BotaoInteresse from "@/components/ofertas/BotaoInteresse";
 
@@ -23,13 +24,13 @@ export default function OfertasHome({ user }) {
             texto="O teste é o começo. Para quem quer se aprofundar, estamos preparando uma avaliação completa e uma mentoria individual."
           />
           <Link to="/planos" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-foreground hover:text-accent transition-colors shrink-0">
-            Conhecer os planos <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+            <span className="sublinhado">Conhecer os planos</span> <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
           </Link>
         </div>
 
-        <div className="mt-12 grid md:grid-cols-2 gap-5">
+        <Cascata className="mt-12 grid md:grid-cols-2 gap-5">
           {disc && (
-            <article className="grao relative overflow-hidden flex flex-col p-8 rounded-[28px] bg-[#0f2e26] text-[#f8f0e6]">
+            <ItemCascata as="article" className="grao relative overflow-hidden flex flex-col p-8 rounded-[28px] bg-[#0f2e26] text-[#f8f0e6]">
               <div className="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-highlight/15 blur-3xl" aria-hidden />
               <span className="relative w-12 h-12 rounded-2xl bg-white/10 text-highlight flex items-center justify-center">
                 <FileBarChart2 className="w-6 h-6" />
@@ -41,10 +42,11 @@ export default function OfertasHome({ user }) {
                 <BotaoInteresse oferta={disc} user={user} className="h-11 px-5 rounded-full bg-[#f8f0e6] text-[#0f2e26] text-sm font-semibold hover:bg-white transition-colors" />
                 <Link to="/planos" className="h-11 px-4 inline-flex items-center text-sm font-semibold text-[#f8f0e6]/80 hover:text-white">Saiba mais</Link>
               </div>
-            </article>
+            </ItemCascata>
           )}
           {mentorias.length > 0 && (
-            <Link to="/planos#mentoria" className="group relative overflow-hidden flex flex-col p-8 rounded-[28px] bg-card border border-border shadow-soft hover:shadow-soft-lg transition-shadow">
+            <ItemCascata className="flex">
+            <Link to="/planos#mentoria" className="flex-1 group relative overflow-hidden flex flex-col p-8 rounded-[28px] bg-card border border-border shadow-soft hover:shadow-soft-lg transition-shadow">
               <span className="w-12 h-12 rounded-2xl bg-accent/15 text-accent flex items-center justify-center">
                 <Compass className="w-6 h-6" />
               </span>
@@ -68,8 +70,9 @@ export default function OfertasHome({ user }) {
                 Comparar planos <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
               </span>
             </Link>
+            </ItemCascata>
           )}
-        </div>
+        </Cascata>
       </div>
     </section>
   );

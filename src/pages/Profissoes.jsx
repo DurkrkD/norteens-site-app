@@ -8,6 +8,7 @@ import CardProfissao from "@/components/profissoes/CardProfissao";
 import Revelar from "@/components/Revelar";
 import { marcarMarco } from "@/utils/progresso";
 import { isEquipe } from "@/utils/papeis";
+import TituloRevelado from "@/components/TituloRevelado";
 
 // tira acentos para a busca achar "medico" em "Médico"
 const normalizar = (s) => (s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
@@ -66,10 +67,10 @@ export default function Profissoes() {
         <div className="absolute inset-0 bg-grade mask-fade pointer-events-none" />
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-14 pb-12 sm:pt-20 sm:pb-14">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Guia vocacional</p>
-          <h1 className="mt-3 text-[2.4rem] sm:text-6xl font-bold tracking-[-0.03em] leading-[1.05] text-foreground text-balance max-w-3xl">
+          <TituloRevelado className="mt-3 text-[2.4rem] sm:text-6xl font-bold tracking-[-0.03em] leading-[1.05] text-foreground text-balance max-w-3xl">
             Conheça cada carreira{" "}
             <span className="font-serif font-normal italic tracking-normal text-accent">por dentro.</span>
-          </h1>
+          </TituloRevelado>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl text-pretty">
             O que a pessoa faz no dia a dia, que formação precisa, quais competências usa e quanto ganha.
           </p>

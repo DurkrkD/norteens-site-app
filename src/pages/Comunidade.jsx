@@ -10,6 +10,7 @@ import PullToRefreshIndicator from "@/components/community/PullToRefreshIndicato
 import { usePullToRefresh } from "@/hooks/use-pull-to-refresh";
 import { marcarMarco } from "@/utils/progresso";
 import { isEquipe } from "@/utils/papeis";
+import TituloRevelado from "@/components/TituloRevelado";
 
 const REGRAS = [
   { icon: HeartHandshake, titulo: "Seja gentil", texto: "Todo mundo aqui está tentando descobrir o próprio caminho." },
@@ -51,10 +52,10 @@ export default function Comunidade() {
         <div className="absolute inset-0 bg-grade mask-fade pointer-events-none" />
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-10 sm:pt-16 sm:pb-12">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Comunidade</p>
-          <h1 className="mt-3 text-[2.4rem] sm:text-[3.25rem] font-bold tracking-[-0.03em] leading-[1.05] text-foreground text-balance max-w-3xl">
+          <TituloRevelado className="mt-3 text-[2.4rem] sm:text-[3.25rem] font-bold tracking-[-0.03em] leading-[1.05] text-foreground text-balance max-w-3xl">
             Ninguém precisa decidir{" "}
             <span className="font-serif font-normal italic tracking-normal text-accent">sozinho.</span>
-          </h1>
+          </TituloRevelado>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl text-pretty">
             Tire dúvidas, conte suas descobertas e troque ideias com outros jovens que também estão escolhendo o futuro.
           </p>

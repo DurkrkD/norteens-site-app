@@ -13,7 +13,6 @@ import Perguntas from "@/components/home/Perguntas";
 import ChamadaFinal from "@/components/home/ChamadaFinal";
 import ProgressoCard from "@/components/progresso/ProgressoCard";
 import { isEquipe } from "@/utils/papeis";
-import Revelar from "@/components/Revelar";
 
 export default function Home() {
   const { user } = useOutletContext();
@@ -33,13 +32,13 @@ export default function Home() {
       {user && !isEquipe(user) && <ProgressoCard user={user} />}
       <Numeros profissoes={profissoes.length} famosos={famosos.length} />
       <ComoFunciona />
-      {/* cada seção entra suavemente ao aparecer na tela */}
-      <Revelar><Recursos profissoes={profissoes} famosos={famosos} /></Revelar>
-      <Revelar><ProfissoesDestaque profissoes={profissoes} /></Revelar>
-      <Revelar><OfertasHome user={user} /></Revelar>
-      <Revelar><TestimonialSection /></Revelar>
-      <Revelar><Perguntas /></Revelar>
-      <Revelar><ChamadaFinal user={user} /></Revelar>
+      {/* cada seção anima por dentro: título palavra por palavra e cartões em cascata */}
+      <Recursos profissoes={profissoes} famosos={famosos} />
+      <ProfissoesDestaque profissoes={profissoes} />
+      <OfertasHome user={user} />
+      <TestimonialSection />
+      <Perguntas />
+      <ChamadaFinal user={user} />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import React from "react";
 import { Check } from "lucide-react";
 import Logo from "@/components/Logo";
 import { MascotCap, MascotGirl } from "@/components/home/Mascots";
+import TituloRevelado from "@/components/TituloRevelado";
 
 const beneficios = [
   "Teste comportamental que dá sempre o mesmo resultado para as mesmas respostas",
@@ -53,7 +54,7 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
                 <Icon className="w-5 h-5" aria-hidden="true" />
               </div>
             )}
-            <h1 className="text-3xl font-semibold text-foreground">{title}</h1>
+            <TituloRevelado className="text-3xl font-semibold text-foreground">{title}</TituloRevelado>
             {subtitle && <p className="mt-2 text-muted-foreground">{subtitle}</p>}
           </div>
 

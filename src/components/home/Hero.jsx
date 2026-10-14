@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Check, Sparkles } from "lucide-react";
 import { PERFIS, ORDEM_EIXOS } from "@/data/perfis";
 import TituloRevelado from "@/components/TituloRevelado";
+import Parallax from "@/components/Parallax";
+import Magnetico from "@/components/Magnetico";
 
 // valores ilustrativos da prévia do resultado (não é dado de ninguém)
 const EXEMPLO = { D: 38, I: 84, S: 61, C: 47 };
@@ -13,7 +15,8 @@ function PreviaProduto() {
       {/* brilho de fundo */}
       <div className="absolute -inset-6 bg-gradient-to-tr from-accent/20 via-highlight/10 to-secondary/20 blur-3xl rounded-[48px]" />
 
-      {/* cartão: pergunta do teste */}
+      {/* cartão: pergunta do teste (cada cartão anda numa velocidade na rolagem: profundidade) */}
+      <Parallax velocidade={0.06} className="relative">
       <div className="relative ml-auto w-[88%] rounded-2xl bg-card border border-border shadow-soft-lg p-5 animate-fade-up">
         <div className="flex items-center justify-between text-[11px] font-semibold text-muted-foreground">
           <span>PERGUNTA 4 DE 12</span>
@@ -39,8 +42,10 @@ function PreviaProduto() {
           <span className="text-[11px] text-muted-foreground w-16 text-right">Conversa</span>
         </div>
       </div>
+      </Parallax>
 
       {/* cartão: resultado */}
+      <Parallax velocidade={0.12} className="relative">
       <div className="relative -mt-4 mr-auto w-[92%] rounded-2xl bg-card border border-border shadow-elevated overflow-hidden animate-fade-up [animation-delay:120ms]">
         <div className="px-5 py-4 bg-[#0f2e26] text-[#f8f0e6] flex items-center justify-between">
           <div>
@@ -65,9 +70,11 @@ function PreviaProduto() {
           ))}
         </div>
       </div>
+      </Parallax>
 
-      {/* selo: próximos passos */}
-      <div className="absolute -bottom-14 right-0 sm:-right-4 rounded-2xl bg-card border border-border shadow-soft-lg px-4 py-3 animate-flutuar">
+      {/* selo: próximos passos (o posicionamento fica no Parallax; o flutuar, no cartão) */}
+      <Parallax velocidade={0.22} className="absolute -bottom-14 right-0 sm:-right-4">
+      <div className="rounded-2xl bg-card border border-border shadow-soft-lg px-4 py-3 animate-flutuar">
         <p className="text-[10px] font-semibold tracking-[0.14em] text-muted-foreground">CARREIRAS PARA EXPLORAR</p>
         <div className="mt-2 flex gap-1.5">
           {["📣 Comunicação", "🧠 Psicologia", "✈️ Turismo"].map((c) => (
@@ -75,6 +82,7 @@ function PreviaProduto() {
           ))}
         </div>
       </div>
+      </Parallax>
     </div>
   );
 }
@@ -88,7 +96,7 @@ export default function Hero({ user }) {
 
   return (
     <section className="relative overflow-hidden">
-      <div className="absolute inset-0 bg-grade mask-fade pointer-events-none" />
+      <Parallax velocidade={-0.08} className="absolute inset-0 bg-grade mask-fade pointer-events-none" />
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-14 pb-20 sm:pt-20 lg:pt-24 lg:pb-28">
         <div className="grid lg:grid-cols-[1.05fr_1fr] gap-14 lg:gap-12 items-center">
           <div className="text-center lg:text-left">
@@ -109,19 +117,23 @@ export default function Hero({ user }) {
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
-              <Link
-                to={cta.to}
-                className="group inline-flex items-center justify-center gap-2 h-12 px-6 rounded-full bg-primary text-primary-foreground font-semibold shadow-soft-lg hover:bg-primary/90 transition-all"
-              >
-                {cta.label}
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-              </Link>
-              <Link
-                to="/profissoes"
-                className="inline-flex items-center justify-center h-12 px-6 rounded-full bg-card border border-border font-semibold text-foreground hover:bg-muted transition-colors"
-              >
-                Explorar profissões
-              </Link>
+              <Magnetico>
+                <Link
+                  to={cta.to}
+                  className="group inline-flex items-center justify-center gap-2 h-12 px-6 rounded-full bg-primary text-primary-foreground font-semibold shadow-soft-lg hover:bg-primary/90 transition-all"
+                >
+                  {cta.label}
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </Magnetico>
+              <Magnetico forca={0.2}>
+                <Link
+                  to="/profissoes"
+                  className="inline-flex items-center justify-center h-12 px-6 rounded-full bg-card border border-border font-semibold text-foreground hover:bg-muted transition-colors"
+                >
+                  Explorar profissões
+                </Link>
+              </Magnetico>
             </div>
 
             <ul className="mt-8 flex flex-wrap justify-center lg:justify-start gap-x-6 gap-y-2 text-sm text-muted-foreground">

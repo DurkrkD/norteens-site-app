@@ -1,6 +1,7 @@
 import React from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { CabecalhoSecao } from "@/components/home/Secao";
+import Revelar from "@/components/Revelar";
 
 const FAQ = [
   {
@@ -40,6 +41,7 @@ export default function Perguntas() {
           destaque="frequentes."
           texto="Não achou o que procurava? Pergunte na comunidade."
         />
+        <Revelar atraso={0.1}>
         <Accordion type="single" collapsible className="w-full">
           {FAQ.map((f, i) => (
             <AccordionItem key={f.p} value={`item-${i}`} className="border-border">
@@ -50,6 +52,7 @@ export default function Perguntas() {
             </AccordionItem>
           ))}
         </Accordion>
+        </Revelar>
       </div>
     </section>
   );

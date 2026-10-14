@@ -5,6 +5,7 @@ import { motion, LayoutGroup } from "framer-motion";
 import { norteens } from "@/api/norteensClient";
 import { PageLoading, EmptyState } from "@/components/layout/Page";
 import CartaFamoso from "@/components/famosos/CartaFamoso";
+import TituloRevelado from "@/components/TituloRevelado";
 
 // Fisher–Yates: cada ordem tem a mesma chance
 function embaralhada(lista) {
@@ -54,10 +55,10 @@ export default function Famosos() {
         <div className="absolute inset-0 bg-grade mask-fade pointer-events-none" />
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-14 pb-12 sm:pt-20 sm:pb-14">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Inspiração</p>
-          <h1 className="mt-3 text-[2.4rem] sm:text-6xl font-bold tracking-[-0.03em] leading-[1.05] text-foreground text-balance max-w-3xl">
+          <TituloRevelado className="mt-3 text-[2.4rem] sm:text-6xl font-bold tracking-[-0.03em] leading-[1.05] text-foreground text-balance max-w-3xl">
             Gente que chegou{" "}
             <span className="font-serif font-normal italic tracking-normal text-accent">lá.</span>
-          </h1>
+          </TituloRevelado>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl text-pretty">
             Uma coleção de pessoas reais que construíram carreira nas profissões que você está explorando. Vire as
             cartas para conhecer cada trajetória.

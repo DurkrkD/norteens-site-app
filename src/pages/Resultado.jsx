@@ -8,6 +8,7 @@ import { marcarMarco } from "@/utils/progresso";
 import { PERFIS, ORDEM_EIXOS } from "@/data/perfis";
 import { useOfertas } from "@/components/ofertas/useOfertas";
 import { OfertaDiscCompacta } from "@/components/ofertas/Cartoes";
+import TituloRevelado from "@/components/TituloRevelado";
 
 // O texto do perfil (server/perfisTeste.js) vem em Markdown:
 // "## Seu perfil: X", um parágrafo de introdução e blocos "**Título**" seguidos de lista ou parágrafo.
@@ -101,13 +102,13 @@ export default function Resultado() {
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#f8f0e6]/60">
               {primeiroNome ? `${primeiroNome}, seu perfil é` : "Seu perfil é"}
             </p>
-            <h1 className="mt-4 text-5xl sm:text-7xl font-bold tracking-[-0.035em] leading-[0.95]">
+            <TituloRevelado className="mt-4 text-5xl sm:text-7xl font-bold tracking-[-0.035em] leading-[0.95]">
               {r.perfil ? (
                 <span className="font-serif font-normal italic tracking-normal text-highlight">{r.perfil}</span>
               ) : (
                 "Seu resultado"
               )}
-            </h1>
+            </TituloRevelado>
             {eixo && (
               <p className="mt-5 text-xl text-[#f8f0e6]/85 max-w-lg">{PERFIS[eixo].resumo}</p>
             )}

@@ -37,7 +37,22 @@ function iniciar() {
 }
 
 // Liga a rolagem suave no site inteiro; desliga (e volta à nativa) se o sistema pedir menos movimento.
+// Também avisa o ScrollTrigger quando a página muda de altura (dados chegando, troca de página,
+// acordeão abrindo): sem isso o parallax de baixo usaria posições antigas.
 export function useRolagemSuave() {
+  useEffect(() => {
+    let espera;
+    const altura = new ResizeObserver(() => {
+      clearTimeout(espera);
+      espera = setTimeout(() => ScrollTrigger.refresh(), 150);
+    });
+    altura.observe(document.body);
+    return () => {
+      clearTimeout(espera);
+      altura.disconnect();
+    };
+  }, []);
+
   useEffect(() => {
     const mq = window.matchMedia(MQ_REDUZIR);
     let parar = null;

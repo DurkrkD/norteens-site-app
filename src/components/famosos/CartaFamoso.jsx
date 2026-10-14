@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { RotateCw, ArrowRight, Sparkles } from "lucide-react";
 import { LogoMark } from "@/components/Logo";
+import ImagemRevelada from "@/components/ImagemRevelada";
 
 // "Tipos" das cartas (como os tipos de uma carta colecionável): a cor vem da profissão,
 // então famosos da mesma área ficam com a mesma moldura.
@@ -80,7 +81,7 @@ export default function CartaFamoso({ famoso: f, profissao }) {
             {/* janela da foto */}
             <div className="relative mt-2 flex-1 min-h-0 rounded-xl overflow-hidden ring-[3px] ring-white/80 shadow-inner bg-gradient-to-br from-white/60 to-black/5">
               {f.foto_url ? (
-                <img src={f.foto_url} alt="" loading="lazy" draggable={false} className="absolute inset-0 w-full h-full object-cover object-[50%_22%]" />
+                <ImagemRevelada src={f.foto_url} alt="" loading="lazy" draggable={false} className="absolute inset-0 w-full h-full object-cover object-[50%_22%]" />
               ) : (
                 <div className={`absolute inset-0 flex items-center justify-center bg-gradient-to-br ${tipo.moldura}`}>
                   <span className="absolute text-[9rem] opacity-20 select-none">{profissao?.icone || "✦"}</span>

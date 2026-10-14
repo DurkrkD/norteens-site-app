@@ -50,7 +50,7 @@ export default function Footer() {
               <ul className="space-y-2.5">
                 {col.links.map((l) => (
                   <li key={l.label}>
-                    <Link to={l.to} className="text-sm text-[#f8f0e6]/85 hover:text-highlight transition-colors">
+                    <Link to={l.to} className="sublinhado text-sm text-[#f8f0e6]/85 hover:text-highlight transition-colors">
                       {l.label}
                     </Link>
                   </li>

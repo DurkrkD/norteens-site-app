@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, Clock, ListChecks, Scale, Loader2, Info, CheckCi
 import { norteens } from "@/api/norteensClient";
 import { PERGUNTAS_TESTE } from "@/data/perguntasTeste";
 import { useToast } from "@/components/ui/use-toast";
+import TituloRevelado from "@/components/TituloRevelado";
 
 // escala de 7 pontos -> valor 0..100 que o backend espera (0 = lado esquerdo, 100 = lado direito)
 const ESCALA = [0, 17, 33, 50, 67, 83, 100];
@@ -108,10 +109,10 @@ export default function Teste() {
         <div className="absolute inset-0 bg-grade mask-fade pointer-events-none" />
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6 py-14 sm:py-20 text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Teste comportamental</p>
-          <h1 className="mt-4 text-[2.4rem] sm:text-6xl font-bold tracking-[-0.03em] leading-[1.05] text-foreground text-balance">
+          <TituloRevelado className="mt-4 text-[2.4rem] sm:text-6xl font-bold tracking-[-0.03em] leading-[1.05] text-foreground text-balance">
             Vamos descobrir{" "}
             <span className="font-serif font-normal italic tracking-normal text-accent">como você funciona.</span>
-          </h1>
+          </TituloRevelado>
           <p className="mt-5 text-lg text-muted-foreground max-w-xl mx-auto text-pretty">
             Para cada situação, escolha o quanto você se parece com cada uma das duas frases. Responda pensando em
             como você realmente é, não em como gostaria de ser.

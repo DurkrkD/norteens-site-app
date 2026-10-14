@@ -44,8 +44,9 @@ function separar(filhos, transicao) {
 }
 
 // Título que se revela palavra por palavra, cada uma subindo de dentro da própria linha.
+// Por padrão anima ao abrir a página (títulos do topo); com "aoRolar", quando entra na tela.
 // Para quem pediu menos movimento no sistema, é um título comum (sem divisão nem animação).
-export default function TituloRevelado({ as = "h1", children, className = "", atraso = 0 }) {
+export default function TituloRevelado({ as = "h1", children, className = "", atraso = 0, aoRolar = false }) {
   const reduzir = useReducedMotion();
   const atrasoEntrada = useAtrasoEntrada();
   const [t] = useState(() => (ehCelular() ? TEMPOS.celular : TEMPOS.computador));
@@ -58,9 +59,13 @@ export default function TituloRevelado({ as = "h1", children, className = "", at
     <Componente
       className={className}
       initial="oculto"
-      animate="visivel"
+      {...(aoRolar
+        ? { whileInView: "visivel", viewport: { once: true, margin: "0px 0px -10% 0px" } }
+        : { animate: "visivel" })}
       variants={{
-        visivel: { transition: { staggerChildren: t.entrePalavras, delayChildren: atrasoEntrada + atraso } },
+        visivel: {
+          transition: { staggerChildren: t.entrePalavras, delayChildren: (aoRolar ? 0 : atrasoEntrada) + atraso },
+        },
       }}
     >
       {separar(children, { duration: t.duracao, ease: EASE_SAIDA })}

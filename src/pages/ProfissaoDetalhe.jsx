@@ -9,6 +9,7 @@ import CardProfissao from "@/components/profissoes/CardProfissao";
 import { isEquipe } from "@/utils/papeis";
 import { useOfertas } from "@/components/ofertas/useOfertas";
 import { ChamadaMentoria } from "@/components/ofertas/Cartoes";
+import TituloRevelado from "@/components/TituloRevelado";
 
 // bloco de conteúdo da ficha: título com ícone + texto, separado por linha
 function Bloco({ icon: Icon, titulo, children }) {
@@ -135,9 +136,9 @@ export default function ProfissaoDetalhe() {
               {p.icone || "💼"}
             </div>
             <div className="min-w-0">
-              <h1 className="text-[2.2rem] sm:text-5xl font-bold tracking-[-0.03em] leading-[1.05] text-foreground text-balance">
+              <TituloRevelado className="text-[2.2rem] sm:text-5xl font-bold tracking-[-0.03em] leading-[1.05] text-foreground text-balance">
                 {p.nome}
-              </h1>
+              </TituloRevelado>
               {p.descricao && (
                 <p className="mt-4 text-lg text-muted-foreground leading-relaxed max-w-3xl whitespace-pre-line text-pretty">
                   {p.descricao}

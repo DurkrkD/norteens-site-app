@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { CabecalhoSecao } from "@/components/home/Secao";
 import CardProfissao from "@/components/profissoes/CardProfissao";
+import { Cascata, ItemCascata } from "@/components/Revelar";
 
 export default function ProfissoesDestaque({ profissoes }) {
   if (!profissoes.length) return null;
@@ -21,18 +22,18 @@ export default function ProfissoesDestaque({ profissoes }) {
             to="/profissoes"
             className="group inline-flex items-center gap-1.5 text-sm font-semibold text-foreground shrink-0 hover:text-accent transition-colors"
           >
-            Ver todas as {profissoes.length} profissões
+            <span className="sublinhado">Ver todas as {profissoes.length} profissões</span>
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
           </Link>
         </div>
-        <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <Cascata className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {/* no celular só 3, para a página não ficar comprida demais */}
           {profissoes.slice(0, 6).map((p, i) => (
-            <div key={p.id} className={i >= 3 ? "hidden sm:block" : ""}>
+            <ItemCascata key={p.id} className={i >= 3 ? "hidden sm:block" : ""}>
               <CardProfissao profissao={p} />
-            </div>
+            </ItemCascata>
           ))}
-        </div>
+        </Cascata>
       </div>
     </section>
   );
